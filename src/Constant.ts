@@ -13,11 +13,42 @@ export default class Constant {
         this.name = name;
 
     }
+
+    static lowerCaseAt(str:string,index:number=0){
+        for (; index < str.length; index++) {
+            if(str[index] == str[index].toLowerCase()){
+                 return index;
+            }           
+        }
+        return -1;  
+    }
+
+    /**
+     * Look for the firts character with a UpperCase
+     * @param str 
+     * @param index 
+     */
+    static upperCaseAt(str:string,index:number = 0):number{
+       for (; index < str.length; index++) {
+           if(str[index] == str[index].toUpperCase()){
+                return index;
+           }           
+       }
+       return -1;
+    }
+    static hasUpperCase(str:string){
+        //if after tranform it to lower case is diferrente it means it has at least one character
+         return str.toLowerCase()!=str;   
+    }
+
     /**
      * Converts the name to camelCase
      * for example "ERROR_CODE" will be "ErrorCode" (all underscore are remove, 
      * and the first letter after then is considere as a word start , so it's converted to Upper.)
      * 
+     * note: consider for future to support other styles, for example :
+     * >const errorCode='';
+     * In this case it not use _ underscores, so it will not work.
      * @param name string
      */
     static toCamelCase(name:string){
