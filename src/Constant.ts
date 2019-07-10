@@ -1,0 +1,111 @@
+// tslint:disable-next-line:quotemark
+import * as vscode from 'vscode';
+
+
+export default class Constant {
+    private description: string = null;
+    private name: string;
+    private indentation: string;
+    private camelCaseName:string;
+
+
+    public constructor(name: string) {
+        this.name = name;
+
+    }
+    /**
+     * Converts the name to camelCase
+     * for example "ERROR_CODE" will be "ErrorCode" (all underscore are remove, 
+     * and the first letter after then is considere as a word start , so it's converted to Upper.)
+     * 
+     * @param name string
+     */
+    static toCamelCase(name:string){
+        var parts=name.split('_')
+        var camelCaseName='';
+        parts.forEach(p=>{
+                camelCaseName+= p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();
+            }
+        );
+        return camelCaseName;
+    }
+    static fromEditorPosition(editor: vscode.TextEditor, activePosition: vscode.Position) {
+        const wordRange = editor.document.getWordRangeAtPosition(activePosition);
+        
+        if (wordRange === undefined) {
+            throw new Error('No property found. Please select a property to use this extension.');
+        }
+
+        const selectedWord = editor.document.getText(wordRange);
+        
+        //if(!wordRange.contains('constant')){
+        //}
+        if (selectedWord[0] === '$') {
+            throw new Error('No constant found. Please select a constant to use this extension.');
+        }
+        let constant = new Constant(selectedWord);
+        const activeLineNumber = activePosition.line;
+        const activeLine = editor.document.lineAt(activeLineNumber);
+
+        constant.indentation = activeLine.text.substring(0, activeLine.firstNonWhitespaceCharacterIndex);
+
+        const previousLineNumber = activeLineNumber - 1;
+        //if there is nothing before just return the constant
+        if (previousLineNumber <= 0) {
+            return constant;
+        }
+        const previousLine = editor.document.lineAt(previousLineNumber);
+        // No doc block found
+        if (!previousLine.text.endsWith('*/')) {
+            return constant;
+        }
+
+
+
+        //since the line number where we found the constant up to above(we decrease the line number):
+        for (let lineNumber = previousLineNumber - 1; lineNumber > 0; lineNumber--) {
+            // Everything found (it has all properties)
+            if (constant.name 
+               // && constant.type 
+                 && constant.description) {
+                break;
+            }
+
+            const text = editor.document.lineAt(lineNumber).text;
+            //:::note here, some peope usea comments in line son for the future this must be considere
+            // Reached the end of the doc block (multiline comments)
+            if (text.includes('/**') || !text.includes('*')) {
+                break;
+            }
+
+            // Remove spaces & tabs
+            const lineParts = text.split(' ').filter(function(value){
+                return value !== '' && value !== "\t" && value !== "*";
+            });
+            //we look for the @const annotation:
+            const varPosition = lineParts.indexOf('@const');//note const is not a standard
+
+            // Found @const line
+            if (-1 !== varPosition) {
+                //property.setType(lineParts[varPosition + 1]);
+
+                var descriptionParts = lineParts.slice(varPosition + 2);
+
+                if (descriptionParts.length) {
+                    constant.description = descriptionParts.join(` `);
+                }
+
+                continue;
+            }
+
+            const posibleDescription = lineParts.join(` `);
+
+            if (posibleDescription[0] !== '@') {
+                constant.description = posibleDescription;
+            }
+        }
+
+        return constant;
+        
+    }
+}
