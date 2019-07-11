@@ -18,11 +18,12 @@ export default class Property {
 
     static fromEditorPosition(editor: vscode.TextEditor, activePosition: vscode.Position) {
         const wordRange = editor.document.getWordRangeAtPosition(activePosition);
+        const wordRange2 = editor.document.getWordRangeAtPosition(activePosition);
 
         if (wordRange === undefined) {
             throw new Error('No property found. Please select a property to use this extension.');
         }
-
+        
         const selectedWord = editor.document.getText(wordRange);
 
         if (selectedWord[0] !== '$') {
@@ -154,5 +155,12 @@ export default class Property {
         if (this.isValidTypeHint(type)) {
             this.typeHint = type;
         }
+    }
+
+    hasserName() {
+        return this.generateMethodName('has');
+    }
+	hasserDescription() {
+        return this.generateMethodDescription('Verify   ');
     }
 }

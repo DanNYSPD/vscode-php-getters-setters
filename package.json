@@ -31,7 +31,8 @@
         "onLanguage:php",
         "onCommand:phpGettersSetters.insertGetter",
         "onCommand:phpGettersSetters.insertSetter",
-        "onCommand:phpGettersSetters.insertGetterAndSetter"
+        "onCommand:phpGettersSetters.insertGetterAndSetter",
+        "onCommand:phpGettersSetters.insertHasser"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -91,6 +92,10 @@
             {
                 "command": "phpGettersSetters.insertGetterAndSetter",
                 "title": "Insert PHP Getter & Setter"
+            },
+            {
+                "command": "phpGettersSetters.insertHasser",
+                "title": "Insert PHP haser"
             }
         ],
         "menus": {
@@ -105,6 +110,10 @@
                 },
                 {
                     "command": "phpGettersSetters.insertGetterAndSetter",
+                    "when": "editorLangId == php"
+                },
+                {
+                    "command": "phpGettersSetters.insertHasser",
                     "when": "editorLangId == php"
                 }
             ],
@@ -126,6 +135,12 @@
                     "command": "phpGettersSetters.insertGetterAndSetter",
                     "alt": "phpGettersSetters.insertGetterAndSetter",
                     "group": "0_phpGettersSetters@3"
+                },
+                {
+                    "when": "resourceLangId == php",
+                    "command": "phpGettersSetters.insertHasser",
+                    "alt": "phpGettersSetters.insertHasser",
+                    "group": "0_phpGettersSetters@4"
                 }
             ]
         }

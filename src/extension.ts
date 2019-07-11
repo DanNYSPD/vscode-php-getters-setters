@@ -109,6 +109,45 @@ class Resolver {
 
         this.renderTemplate(content);
     }
+    insertHasser() {
+        const editor = this.activeEditor();
+        let property = null;
+        let content = '';
+        for (let index = 0; index < editor.selections.length; index++) {
+            const selection = editor.selections[index];
+            try {
+                property = Property.fromEditorPosition(editor, selection.active);
+            }
+            catch (error) {
+                this.showErrorMessage(error.message);
+                return null;
+            }
+            content += this.hasserTemplate(property);
+        }
+        this.renderTemplate(content);
+    }
+    hasserTemplate(prop) {
+        const name = prop.getName();
+        const description = prop.getDescription();
+        const tab = prop.getIndentation();
+        const type = prop.getType();
+        const spacesAfterReturn = Array(this.config.getInt('spacesAfterReturn', 2) + 1).join(' ');
+        const templateFile = this.config.get('getterTemplate', 'getter.js');
+        if (this.templatesManager.exists(templateFile)) {
+            const template = require(this.templatesManager.path(templateFile));
+            return template(prop);
+        }
+        return (`\n`
+            + tab + `/**\n`
+            + tab + ` * ` + prop.hasserDescription() + `\n`
+            + (type ? tab + ` *\n` : ``)
+            + (type ? tab + ` * @return` + spacesAfterReturn + type + `\n` : ``)
+            + tab + ` */ \n`
+            + tab + `public function ` + prop.hasserName() + `():bool\n`
+            + tab + `{\n`
+            + tab + tab + `return !empty($this->` + name + `);\n`
+            + tab + `}\n`);
+    }
 
     getterTemplate(prop: Property) {
         const name = prop.getName();
@@ -235,10 +274,13 @@ function activate(context: vscode.ExtensionContext) {
     let insertGetter = vscode.commands.registerCommand('phpGettersSetters.insertGetter', () => resolver.insertGetter());
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
     let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
+    let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
+	context.subscriptions.push(insertHasser);
+
 }
 
 function deactivate() {
