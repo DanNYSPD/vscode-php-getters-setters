@@ -2,11 +2,12 @@
 import * as vscode from 'vscode';
 
 
-export default class Constant {
+export default class Constant { 
     private description: string = null;
     private name: string;
     private indentation: string;
     private camelCaseName:string;
+    private type:string;
 
 
     public constructor(name: string) {
@@ -138,5 +139,19 @@ export default class Constant {
 
         return constant;
         
+    }
+
+    getName(){
+        return this.name;
+    }
+    getDescription(){
+        return this.description;
+    }
+
+    getIndentation() : string {
+        return this.indentation;
+    }
+    getType(){
+        return this.type;
     }
 }

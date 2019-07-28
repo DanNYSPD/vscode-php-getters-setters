@@ -5,6 +5,7 @@ import Redirector from "./Redirector";
 import Property from "./Property";
 import Configuration from "./Configuration";
 import TemplatesManager from './TemplatesManager';
+import Constant from './Constant';
 
 class Resolver {
     config: Configuration;
@@ -125,6 +126,47 @@ class Resolver {
             content += this.hasserTemplate(property);
         }
         this.renderTemplate(content);
+    }
+    insertIsConstant() {
+        const editor = this.activeEditor();
+        let constant = null;
+        let content = '';
+        for (let index = 0; index < editor.selections.length; index++) {
+            const selection = editor.selections[index];
+            try {
+                constant = Constant.fromEditorPosition(editor, selection.active);
+            }
+            catch (error) {
+                this.showErrorMessage(error.message);
+                return null;
+            }
+            content += this.constantTemplate(constant);
+        }
+        this.renderTemplate(content);
+    }
+    constantTemplate(prop:Constant) {
+        const name = prop.getName();
+        const camelCaseName=Constant.toCamelCase(name);
+        const description = prop.getDescription();
+        const tab = prop.getIndentation();
+        const type = prop.getType();
+        const spacesAfterReturn = Array(this.config.getInt('spacesAfterReturn', 2) + 1).join(' ');
+        const templateFile = this.config.get('getterTemplate', 'getter.js');
+        if (this.templatesManager.exists(templateFile)) {
+            const template = require(this.templatesManager.path(templateFile));
+            return template(prop);
+        }
+        return (`\n`
+            + tab + `/**\n`
+            + tab + ` * ` + prop.getDescription() + `\n`
+            + (type ? tab + ` *\n` : ``)
+            + (type ? tab + ` * @return` + spacesAfterReturn + type + `\n` : ``)
+            + tab + ` */ \n`
+            + tab + `public function is` + camelCaseName + `():bool\n`
+            + tab + `{\n`
+            //+ tab + tab + `return !empty($this->` + name + `);\n`
+            + tab + tab + `return self::`+prop.getName()  + `==;\n`
+            + tab + `}\n`);
     }
     hasserTemplate(prop) {
         const name = prop.getName();
@@ -275,11 +317,13 @@ function activate(context: vscode.ExtensionContext) {
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
     let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
     let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
+    let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
 	context.subscriptions.push(insertHasser);
+	context.subscriptions.push(insertIsConstant);
 
 }
 
