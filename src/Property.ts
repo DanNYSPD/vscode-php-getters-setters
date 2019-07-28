@@ -163,4 +163,45 @@ export default class Property {
 	hasserDescription() {
         return this.generateMethodDescription('Verify   ');
     }
+
+    static getProperties(text :vscode.TextDocument){
+        var i=0;
+        let lstPropertiesNames:string[]=[];
+        while(i<text.lineCount){
+            var line=text.lineAt(i);
+
+            if(
+                line.text.includes('$')
+
+             && line.text.includes(';')
+            &&!line.isEmptyOrWhitespace){//with this I descart the line, improving performance too
+                if(
+                (
+                line.text.includes('public')        //consider only propierties under with scope
+                ||line.text.includes('public')      //consider only propierties under with scope
+                ||line.text.includes('protected')   //consider only propierties under with scope
+                )
+                &&
+                 !line.text.includes('function') //discard function declartion
+                && !line.text.includes('__construct') //discard constructor
+                ){//note: this doesnt consider the php 7.4 that will be realease in november and which will allow hint type
+                    
+                    if(line.text.includes('=')){ //it means that there is a asignation
+                       line.text.substr(0,line.text.indexOf('='));
+                       var name=line.text.split(' ')[1];// I get the name
+                       name=name.substring(1,name.length-2); //remove the $ and ;
+                       lstPropertiesNames.push(name);
+
+
+                    }else{
+                        var name=line.text.split(' ')[1];// I get the name
+                        name=name.substring(1,name.length-2); //remove the $ and ;
+                        lstPropertiesNames.push(name);
+                    }
+                }
+            }
+            i++
+        }
+        return lstPropertiesNames;
+    }
 }

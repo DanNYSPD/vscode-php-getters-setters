@@ -331,10 +331,14 @@ class Resolver {
         var i=0;
         var constructorFounded;
         var lstparameters:string[]=[];
+
+        var lineConstructorNumber=-1;
         while(constructorFounded!=true){
             var line=editor.document.lineAt(i);
 
             if(line.text.includes("__construct")){
+                var lineConstructorNumber=i;
+
                 constructorFounded=true;
                var constructArr= line.text.split("__construct");
               const parameters= constructArr[1] ;//contendria los parametros
@@ -351,7 +355,8 @@ class Resolver {
 
             i++;
         }
-
+        //I get the propierties
+        let lstProperties=  Property.getProperties(editor.document);
         //now I process the paramters list
         var lstparametersObj:Property[]=[];
         lstparameters.forEach(element => {
@@ -365,6 +370,8 @@ class Resolver {
                 lstparametersObj.push(new Property(element.substr(1)));//removes the $ symbol
             }
         });
+      
+
         let template='';
         lstparametersObj.forEach(element => {
            const tab='\t';
