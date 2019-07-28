@@ -34,7 +34,6 @@
         "onCommand:phpGettersSetters.insertGetterAndSetter",
         "onCommand:phpGettersSetters.insertHasser",
         "onCommand:phpGettersSetters.insertIsConstant"
-        
     ],
     "main": "./out/extension",
     "contributes": {
@@ -98,16 +97,18 @@
             {
                 "command": "phpGettersSetters.insertHasser",
                 "title": "Insert PHP haser"
-            }
-            ,
+            },
             {
                 "command": "phpGettersSetters.insertIsConstant",
                 "title": "Insert PHP is constant"
-            }
-            ,
+            },
             {
                 "command": "phpGettersSetters.insertClass",
                 "title": "Insert PHP Class"
+            },
+            {
+                "command": "phpGettersSetters.insertConstructorProperties",
+                "title": "Insert PHP Constructor properties"
             }
         ],
         "menus": {
@@ -127,14 +128,18 @@
                 {
                     "command": "phpGettersSetters.insertHasser",
                     "when": "editorLangId == php"
-                }
-                ,
+                },
                 {
                     "command": "phpGettersSetters.insertIsConstant",
                     "when": "editorLangId == php"
                 },
                 {
                     "command": "phpGettersSetters.insertClass",
+                    "when": "editorLangId == php"
+                }
+                ,
+                {
+                    "command": "phpGettersSetters.insertConstructorProperties",
                     "when": "editorLangId == php"
                 }
             ],
@@ -168,12 +173,18 @@
                     "command": "phpGettersSetters.insertIsConstant",
                     "alt": "phpGettersSetters.insertIsConstant",
                     "group": "0_phpGettersSetters@4"
-                
                 },
                 {
                     "when": "resourceLangId == php",
                     "command": "phpGettersSetters.insertClass",
                     "alt": "phpGettersSetters.insertClass",
+                    "group": "0_phpGettersSetters@4"
+                }
+                ,
+                {
+                    "when": "resourceLangId == php",
+                    "command": "phpGettersSetters.insertConstructorProperties",
+                    "alt": "phpGettersSetters.insertConstructorProperties",
                     "group": "0_phpGettersSetters@4"
                 }
             ]
@@ -191,5 +202,8 @@
         "vscode": "^1.1.6",
         "@types/node": "^7.0.43",
         "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "vscode-languageclient": "5.1.1"
     }
 }

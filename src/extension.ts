@@ -8,6 +8,8 @@ import TemplatesManager from './TemplatesManager';
 import Constant from './Constant';
 import Classe   from './Classe';
 
+//import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
+
 class Resolver {
     config: Configuration;
     templatesManager: TemplatesManager;
@@ -30,7 +32,19 @@ class Resolver {
     }
 
 
-    activeEditor() {
+      activeEditor() {
+/*
+        const conf = vscode.workspace.getConfiguration('php')
+    const executablePath =
+        conf.get<string>('executablePath') ||
+        conf.get<string>('validate.executablePath') ||
+        (process.platform === 'win32' ? 'php.exe' : 'php')
+
+    const memoryLimit = conf.get<string>('memoryLimit') || '4095M'
+
+    let client: LanguageClient*/
+
+        //hasta aqui es lo que tenia por defecto
         return vscode.window.activeTextEditor;
     }
 
@@ -310,6 +324,62 @@ class Resolver {
         );
         
     }
+    insertConstructorProperties(){
+        const editor = this.activeEditor();
+
+        editor.document.lineCount
+        var i=0;
+        var constructorFounded;
+        var lstparameters:string[]=[];
+        while(constructorFounded!=true){
+            var line=editor.document.lineAt(i);
+
+            if(line.text.includes("__construct")){
+                constructorFounded=true;
+               var constructArr= line.text.split("__construct");
+              const parameters= constructArr[1] ;//contendria los parametros
+                if(parameters.includes('(')&&parameters.includes(')')){
+                    //this means that the constuctor signature is in one single line.
+                    let beginning=parameters.indexOf('(')+1;
+                    let last=parameters.indexOf(')');
+                    lstparameters=parameters.substr(beginning,last-beginning).split(',');
+                }else{
+                    ///for the next phase
+                }
+
+            }
+
+            i++;
+        }
+
+        //now I process the paramters list
+        var lstparametersObj:Property[]=[];
+        lstparameters.forEach(element => {
+            var ind=element.indexOf(' ')//i will search if there is a space (this means that there is two words, so there is a type and a name)
+            if(ind>=0){
+                var eles=element.split(' ');
+                var p= new Property(eles[1].substr(1)); //removes the $ symbol
+                p.setType(eles[0])
+                lstparametersObj.push(p);
+            }else{
+                lstparametersObj.push(new Property(element.substr(1)));//removes the $ symbol
+            }
+        });
+        let template='';
+        lstparametersObj.forEach(element => {
+           const tab='\t';
+
+           template+=
+            tab+ `/**\n`+
+            tab +`*\n`+
+            tab+`*`+(element.getType()?` @var `+element.getType():``)+`\n`+
+            tab+`*/\n`+
+            tab+`public $`+element.getName()+`;`+
+            tab+`\n`;
+           
+        });
+        this.renderTemplate(template);
+    }
 
     renderTemplate(template: string) {
         if (!template) {
@@ -375,12 +445,16 @@ function activate(context: vscode.ExtensionContext) {
     let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
     let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
     let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
+    let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
 	context.subscriptions.push(insertHasser);
-	context.subscriptions.push(insertClass);
+    context.subscriptions.push(insertClass);
+    
+
+	context.subscriptions.push(insertConstructorProperties);
 
 }
 

@@ -15,4 +15,7 @@ export default class Classe{
         this.includePhpTag=value;
     }
 
+    static  autoCompleteCOntructorProperties(){
+
+    }
 }
