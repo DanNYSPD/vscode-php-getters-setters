@@ -374,6 +374,10 @@ class Resolver {
 
         let template='';
         lstparametersObj.forEach(element => {
+            if(lstProperties.find(x=>x==element.getName())){
+                return;
+            }
+
            const tab='\t';
 
            template+=
