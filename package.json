@@ -34,6 +34,7 @@
         "onCommand:phpGettersSetters.insertGetterAndSetter",
         "onCommand:phpGettersSetters.insertHasser",
         "onCommand:phpGettersSetters.insertIsConstant"
+        
     ],
     "main": "./out/extension",
     "contributes": {
@@ -103,6 +104,11 @@
                 "command": "phpGettersSetters.insertIsConstant",
                 "title": "Insert PHP is constant"
             }
+            ,
+            {
+                "command": "phpGettersSetters.insertClass",
+                "title": "Insert PHP Class"
+            }
         ],
         "menus": {
             "commandPalette": [
@@ -125,6 +131,10 @@
                 ,
                 {
                     "command": "phpGettersSetters.insertIsConstant",
+                    "when": "editorLangId == php"
+                },
+                {
+                    "command": "phpGettersSetters.insertClass",
                     "when": "editorLangId == php"
                 }
             ],
@@ -157,6 +167,13 @@
                     "when": "resourceLangId == php",
                     "command": "phpGettersSetters.insertIsConstant",
                     "alt": "phpGettersSetters.insertIsConstant",
+                    "group": "0_phpGettersSetters@4"
+                
+                },
+                {
+                    "when": "resourceLangId == php",
+                    "command": "phpGettersSetters.insertClass",
+                    "alt": "phpGettersSetters.insertClass",
                     "group": "0_phpGettersSetters@4"
                 }
             ]

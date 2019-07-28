@@ -6,6 +6,7 @@ import Property from "./Property";
 import Configuration from "./Configuration";
 import TemplatesManager from './TemplatesManager';
 import Constant from './Constant';
+import Classe   from './Classe';
 
 class Resolver {
     config: Configuration;
@@ -254,6 +255,61 @@ class Resolver {
             + tab + `}\n`
         );
     }
+    insertClass() {
+        const editor = this.activeEditor();
+        let classe = null;
+        let content = '';
+        let name=editor.document.fileName;
+        let line1=editor.document.lineAt(0);
+         
+
+        for (let index = 0; index < editor.selections.length; index++) {
+            const selection = editor.selections[index];
+            try {
+                classe =new Classe();
+                classe.name=name;
+                if(line1.isEmptyOrWhitespace){
+                    classe.setIncludePhpTag(true);
+                }
+            }
+            catch (error) {
+                this.showErrorMessage(error.message);
+                return null;
+            }
+            content += this.classTemplate(classe);
+        }
+        this.renderTemplate(content);
+    }
+    classTemplate(classe:Classe){
+     
+       const tab='\t';
+        const spacesAfterParam = Array(this.config.getInt('spacesAfterParam', 2) + 1).join(' ');
+        const spacesAfterParamVar = Array(this.config.getInt('spacesAfterParamVar', 2) + 1).join(' ');
+        const spacesAfterReturn = Array(this.config.getInt('spacesAfterReturn', 2) + 1).join(' ');
+
+        const templateFile = this.config.get('setterTemplate', 'setter.js');
+
+        if (this.templatesManager.exists(templateFile)) {
+            const template = require(this.templatesManager.path(templateFile));
+
+            return template(classe);
+        }
+        return (
+            `\n`
+            + tab + (classe.includePhpTag?`<?`:``)
+            +`\n`
+            + tab + `/**\n`
+            + tab + ` *\n`
+            + tab + ` *\n`
+            + tab + ` **/\n`
+            + tab + `  class ` + classe.getSimpleName() + `{\n`
+           
+            + `\n`            
+            + tab 
+            + `}\n`
+        );
+        
+    }
 
     renderTemplate(template: string) {
         if (!template) {
@@ -318,12 +374,13 @@ function activate(context: vscode.ExtensionContext) {
     let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
     let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
     let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
+    let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
 	context.subscriptions.push(insertHasser);
-	context.subscriptions.push(insertIsConstant);
+	context.subscriptions.push(insertClass);
 
 }
 
