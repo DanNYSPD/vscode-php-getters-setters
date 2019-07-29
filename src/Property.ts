@@ -204,4 +204,28 @@ export default class Property {
         }
         return lstPropertiesNames;
     }
+
+    static getPropertiesInsideFunctionThatAreClassProperties(begining:number,end:number,text :vscode.TextDocument){
+        let listpropierties=[];
+        while(begining<end){
+            let line=text.lineAt(begining)
+            //I filter lines where have = and ;
+            if(!line.isEmptyOrWhitespace
+                &&
+                line.text.includes('=')
+                &&line.text.includes(';')
+                &&line.text.includes('$')
+                &&line.text.includes('this')//
+                &&
+                !line.text.includes('}')
+                ){  
+                  let firtsPartOfAssignment=  line.text.substring(0,line.text.indexOf('='));
+                  let propertieName=firtsPartOfAssignment.substring(firtsPartOfAssignment.indexOf('>')+1);  
+                  listpropierties.push(propertieName);
+            }
+            begining++;
+
+        }
+        return listpropierties;
+    }
 }

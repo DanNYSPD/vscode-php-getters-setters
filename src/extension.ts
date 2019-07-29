@@ -395,9 +395,15 @@ class Resolver {
 
 
         let constructorBodybegining=DocumentUtils.searchFirts('{',lineConstructorNumber,editor.document)
-        
+        let constructorBodyEnd=DocumentUtils.searchFirts('}',constructorBodybegining,editor.document)
+        let listPropertiesInConstructorThatAreClassProperties=Property.getPropertiesInsideFunctionThatAreClassProperties(constructorBodybegining,constructorBodyEnd,editor.document);
+
         let templateAsingation='';
         lstparametersObj.forEach(element=>{
+
+            if(listPropertiesInConstructorThatAreClassProperties.find(x=>x==element.getName())){
+                return;
+            }
 
            const tab='\t';
            templateAsingation+=''+
@@ -405,23 +411,12 @@ class Resolver {
            tab+`\n`;
           
        });
+       if(!template){
+           template='';
+       }
        this.renderTemplate(template).then(success=>{
-        editor.edit (function(edit: vscode.TextEditorEdit){
-            edit.replace(
-                new vscode.Position(constructorBodybegining+2, 0),
-                templateAsingation
-            );
-        }).then(succces=>{
-            vscode.window.showInformationMessage("hecho");
-    
-        })
-
+            this.renderTemplate(templateAsingation,constructorBodybegining+1);
        })
-
-       //this.renderTemplate(templateAsingation,constructorBodybegining+2);
-      
-
-        
     }
 
     renderTemplate(template: string,lineNumber?:number) {
