@@ -7,6 +7,7 @@ import Configuration from "./Configuration";
 import TemplatesManager from './TemplatesManager';
 import Constant from './Constant';
 import Classe   from './Classe';
+import DocumentUtils from './DocumentUtils';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -50,7 +51,7 @@ class Resolver {
 
     closingClassLine() {
         const editor = this.activeEditor();
-
+        //search starting by the last }, which in a PHP oriented style means that the last } is the end of class.
         for (let lineNumber = editor.document.lineCount - 1; lineNumber > 0; lineNumber--) {
             const line = editor.document.lineAt(lineNumber);
             const text = line.text.trim();
@@ -337,8 +338,7 @@ class Resolver {
             var line=editor.document.lineAt(i);
 
             if(line.text.includes("__construct")){
-                var lineConstructorNumber=i;
-
+                lineConstructorNumber=i;
                 constructorFounded=true;
                var constructArr= line.text.split("__construct");
               const parameters= constructArr[1] ;//contendria los parametros
@@ -347,8 +347,10 @@ class Resolver {
                     let beginning=parameters.indexOf('(')+1;
                     let last=parameters.indexOf(')');
                     lstparameters=parameters.substr(beginning,last-beginning).split(',');
+
+
                 }else{
-                    ///for the next phase
+                    ///for the next phase (in case that the constructor signature is multiline)
                 }
 
             }
@@ -389,41 +391,74 @@ class Resolver {
             tab+`\n`;
            
         });
-        this.renderTemplate(template);
+
+
+
+        let constructorBodybegining=DocumentUtils.searchFirts('{',lineConstructorNumber,editor.document)
+        
+        let templateAsingation='';
+        lstparametersObj.forEach(element=>{
+
+           const tab='\t';
+           templateAsingation+=''+
+           tab+` $this->`+element.getName()+`=$`+element.getName()+`;`+`\n`
+           tab+`\n`;
+          
+       });
+       this.renderTemplate(template).then(success=>{
+        editor.edit (function(edit: vscode.TextEditorEdit){
+            edit.replace(
+                new vscode.Position(constructorBodybegining+2, 0),
+                templateAsingation
+            );
+        }).then(succces=>{
+            vscode.window.showInformationMessage("hecho");
+    
+        })
+
+       })
+
+       //this.renderTemplate(templateAsingation,constructorBodybegining+2);
+      
+
+        
     }
 
-    renderTemplate(template: string) {
+    renderTemplate(template: string,lineNumber?:number) {
         if (!template) {
             this.showErrorMessage('Missing template to render.');
             return;
         }
-
-        let insertLine = this.insertLine();
-
-        if (!insertLine) {
-            this.showErrorMessage('Unable to detect insert line for template.');
-            return;
+        if(!lineNumber){
+            let insertLine = this.insertLine();
+            
+            if (!insertLine) {
+                this.showErrorMessage('Unable to detect insert line for template.');
+                return;
+            }
+            lineNumber=insertLine.lineNumber;
         }
-
         const editor = this.activeEditor();
         let resolver = this;
 
-        editor.edit(function(edit: vscode.TextEditorEdit){
+     return   editor.edit(function(edit: vscode.TextEditorEdit){
             edit.replace(
-                new vscode.Position(insertLine.lineNumber, 0),
+                new vscode.Position(lineNumber, 0),
                 template
             );
         }).then(
             success => {
                 if (resolver.isRedirectEnabled() && success) {
                     const redirector = new Redirector(editor);
-                    redirector.goToLine(this.closingClassLine().lineNumber - 1);
+                    //redirector.goToLine(this.closingClassLine().lineNumber - 1);
+                    redirector.goToLine(lineNumber);
                 }
             },
             error => {
                 this.showErrorMessage(`Error generating functions: ` + error);
             }
         );
+        
     }
 
     insertLine() {
