@@ -341,7 +341,7 @@ class Resolver {
                 lineConstructorNumber=i;
                 constructorFounded=true;
                var constructArr= line.text.split("__construct");
-              const parameters= constructArr[1] ;//contendria los parametros
+              const parameters= constructArr[1].trim() ;//contendria los parametros
                 if(parameters.includes('(')&&parameters.includes(')')){
                     //this means that the constuctor signature is in one single line.
                     let beginning=parameters.indexOf('(')+1;
@@ -362,6 +362,7 @@ class Resolver {
         //now I process the paramters list
         var lstparametersObj:Property[]=[];
         lstparameters.forEach(element => {
+            element=element.trim();
             var ind=element.indexOf(' ')//i will search if there is a space (this means that there is two words, so there is a type and a name)
             if(ind>=0){
                 var eles=element.split(' ');

@@ -190,6 +190,13 @@
             ]
         }
     },
+    "keybindings":[
+        {  
+            "command": "phpGettersSetters.insertConstructorProperties",
+            "key": "ctrl+alt+t",
+            "when": "editorTextFocus"
+        }
+    ],
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
