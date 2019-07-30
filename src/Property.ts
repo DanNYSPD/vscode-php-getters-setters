@@ -163,7 +163,10 @@ export default class Property {
 	hasserDescription() {
         return this.generateMethodDescription('Verifies wether the propertie  '+this.getName()+` has a value`);
     }
-
+    /**
+     * Gets the class propierties
+     * @param text 
+     */
     static getProperties(text :vscode.TextDocument){
         var i=0;
         let lstPropertiesNames:string[]=[];
@@ -187,9 +190,10 @@ export default class Property {
                 ){//note: this doesnt consider the php 7.4 that will be realease in november and which will allow hint type
                     
                     if(line.text.includes('=')){ //it means that there is a asignation
-                       line.text.substr(0,line.text.indexOf('='));
                        var name=line.text.split(' ')[1];// I get the name
-                       name=name.substring(1,name.length-2); //remove the $ and ;
+                       name=name.trim();
+                       name=name.substr(0,name.indexOf('='));                     
+                       name=name.substring(1);
                        lstPropertiesNames.push(name);
 
 
