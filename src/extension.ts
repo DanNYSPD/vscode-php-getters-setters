@@ -488,6 +488,20 @@ function activate(context: vscode.ExtensionContext) {
     let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
     let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
     let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
+    //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
+    let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value) => {
+    //let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (uri:vscode.Uri) => {
+        //console.log(uri.fsPath);
+        let d: vscode.InputBoxOptions={
+            
+            placeHolder: "Enter the module name please",
+        };
+
+        vscode.window.showInputBox(undefined,undefined).then((value)=>{
+            console.log(""+value);
+        });
+
+    });
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
@@ -496,7 +510,7 @@ function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(insertClass);
     
 
-	context.subscriptions.push(insertConstructorProperties);
+	context.subscriptions.push(addModule);
 
 }
 

@@ -109,6 +109,10 @@
             {
                 "command": "phpGettersSetters.insertConstructorProperties",
                 "title": "Insert PHP Constructor properties"
+            },
+            {
+                "command": "phpGettersSetters.addModule",
+                "title": "Adds a module"
             }
         ],
         "menus": {
@@ -186,6 +190,12 @@
                     "command": "phpGettersSetters.insertConstructorProperties",
                     "alt": "phpGettersSetters.insertConstructorProperties",
                     "group": "0_phpGettersSetters@4"
+                }
+            ],
+            "explorer/context":[
+                {
+                    "when": "explorerResourceIsFolder",
+                    "command": "phpGettersSetters.addModule"
                 }
             ]
         }
