@@ -161,7 +161,7 @@ export default class Property {
         return this.generateMethodName('has');
     }
 	hasserDescription() {
-        return this.generateMethodDescription('Verify   ');
+        return this.generateMethodDescription('Verifies wether the propertie  '+this.getName()+` has a value`);
     }
 
     static getProperties(text :vscode.TextDocument){

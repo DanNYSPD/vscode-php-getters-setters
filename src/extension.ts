@@ -184,7 +184,7 @@ class Resolver {
             + tab + tab + `return self::`+prop.getName()  + `==;\n`
             + tab + `}\n`);
     }
-    hasserTemplate(prop) {
+    hasserTemplate(prop:Property) {
         const name = prop.getName();
         const description = prop.getDescription();
         const tab = prop.getIndentation();
@@ -199,7 +199,7 @@ class Resolver {
             + tab + `/**\n`
             + tab + ` * ` + prop.hasserDescription() + `\n`
             + (type ? tab + ` *\n` : ``)
-            + (type ? tab + ` * @return` + spacesAfterReturn + type + `\n` : ``)
+            + (type ? tab + ` * @return` + spacesAfterReturn + `bool` + `\n` : ``)
             + tab + ` */ \n`
             + tab + `public function ` + prop.hasserName() + `():bool\n`
             + tab + `{\n`
