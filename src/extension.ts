@@ -13,6 +13,9 @@ import { fstat } from 'fs';
 import * as path from 'path';
 import * as fs from 'fs';
 import Module from './Module';
+import { Names } from './Names';
+import Composer from './Composer';
+import PathUtils from './PathUtils';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -167,7 +170,7 @@ class Resolver {
     }
     constantTemplate(prop:Constant) {
         const name = prop.getName();
-        const camelCaseName=Constant.toCamelCase(name);
+        const camelCaseName=Names.toCamelCase(name);
         const description = prop.getDescription();
         const tab = prop.getIndentation();
         const type = prop.getType();
@@ -514,14 +517,30 @@ function activate(context: vscode.ExtensionContext) {
                     console.error(err)
                 }else{
                     //everything was ok , so now I have to create the clases
+                    
+                    let composerFileName=path.join(vscode.workspace.rootPath,'composer.json');//https://code.visualstudio.com/api/references/vscode-api#workspace
+                    let composer=null;
+                    if(fs.existsSync(composerFileName)){
+                        let rawdata = fs.readFileSync(composerFileName,'utf8');
+                        composer = JSON.parse(rawdata);
+                    }
+                    let ComposerObj= new Composer(composer);
+                    if(composer && ComposerObj.hasPSR4()){
+                        //debo remover la parte del root 
+                        let root=vscode.workspace.rootPath;
+                        
+                        let indexTheyDiffer=PathUtils.getIndexOfDifference(root,folderModule);
+                        let subfolder=folderModule.substr(indexTheyDiffer);
+                        console.log(subfolder);
+                    }
 
                     let m= new Module();
                     m.baseName=valuein;
-
+                    m.listDefaultParametersInRepositoryContructor.push("PDO $pdo");
                     let templateRepo=Module.getTemplateForRepository(m);
                     let templateModel=Module.getTemplateForModel(m);
                     let templateController=Module.getTemplateForController(m);
-                    
+
                     let realPathRepo=path.join(folderModule,m.getRepositoryFileName());
                     let realPathModel=path.join(folderModule,m.getModelFileName());
                     let realPathController=path.join(folderModule,m.getControllerFileName());

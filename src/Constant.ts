@@ -42,25 +42,7 @@ export default class Constant {
          return str.toLowerCase()!=str;   
     }
 
-    /**
-     * Converts the name to camelCase
-     * for example "ERROR_CODE" will be "ErrorCode" (all underscore are remove, 
-     * and the first letter after then is considere as a word start , so it's converted to Upper.)
-     * 
-     * note: consider for future to support other styles, for example :
-     * >const errorCode='';
-     * In this case it not use _ underscores, so it will not work.
-     * @param name string
-     */
-    static toCamelCase(name:string){
-        var parts=name.split('_')
-        var camelCaseName='';
-        parts.forEach(p=>{
-                camelCaseName+= p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();
-            }
-        );
-        return camelCaseName;
-    }
+    
     static fromEditorPosition(editor: vscode.TextEditor, activePosition: vscode.Position) {
         const wordRange = editor.document.getWordRangeAtPosition(activePosition);
         

@@ -1,3 +1,5 @@
+import { Names } from "./Names";
+
 /**
  * This class 
  */
@@ -6,6 +8,11 @@ export default class Module{
     baseName:string;
     namespace:string='';
     tab:string=`\t`;
+
+    listDefaultParametersInRepositoryContructor:string[]=[];
+
+    listDefaultParametersInControllerContructor:string[]=[];
+
 
      getRepositoryName():string{
         return this.baseName+`Repository`;
@@ -56,7 +63,7 @@ export default class Module{
         return `<?php`+`\n`
             +`namespace `+module.namespace+`;`+`\n`
             +`class `+module.getControllerName()+` {`+`\n`
-            +tab+`public function __construct(`+module.getRepositoryName()+` $`+module.getRepositoryName()+`){`+`\n`
+            +tab+`public function __construct(`+module.getRepositoryName()+` $`+Names.toLowerCamelCase(module.getRepositoryName())+`){`+`\n`
             +tab+``+`\n`
             +tab+`}`+`\n`
             +`}`+`\n`
