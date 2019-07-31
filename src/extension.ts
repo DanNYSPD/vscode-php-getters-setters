@@ -8,6 +8,11 @@ import TemplatesManager from './TemplatesManager';
 import Constant from './Constant';
 import Classe   from './Classe';
 import DocumentUtils from './DocumentUtils';
+import { fstat } from 'fs';
+
+import * as path from 'path';
+import * as fs from 'fs';
+import Module from './Module';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -492,13 +497,44 @@ function activate(context: vscode.ExtensionContext) {
     let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value) => {
     //let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (uri:vscode.Uri) => {
         //console.log(uri.fsPath);
+        console.log(value)
         let d: vscode.InputBoxOptions={
             
             placeHolder: "Enter the module name please",
         };
 
-        vscode.window.showInputBox(undefined,undefined).then((value)=>{
-            console.log(""+value);
+        vscode.window.showInputBox(undefined,undefined).then((valuein)=>{
+            console.log(""+valuein);
+            console.log(value.path)
+          //let folderModule=  path.join(value.path,valuein)
+          let folderModule=  path.join(value.fsPath,valuein) //at least at windows I have to use fsPath
+          if(!fs.existsSync(folderModule)){
+            fs.mkdir(folderModule,function(err:NodeJS.ErrnoException){
+                if(err){
+                    console.error(err)
+                }else{
+                    //everything was ok , so now I have to create the clases
+
+                    let m= new Module();
+                    m.baseName=valuein;
+
+                    let templateRepo=Module.getTemplateForRepository(m);
+                    let templateModel=Module.getTemplateForModel(m);
+                    let templateController=Module.getTemplateForController(m);
+                    
+                    let realPathRepo=path.join(folderModule,m.getRepositoryFileName());
+                    let realPathModel=path.join(folderModule,m.getModelFileName());
+                    let realPathController=path.join(folderModule,m.getControllerFileName());
+
+
+                    fs.writeFileSync(realPathRepo,templateRepo);
+                    fs.writeFileSync(realPathModel,templateModel);
+                    fs.writeFileSync(realPathController,templateController);
+                }
+            });
+          }
+
+          //now i can create the files  
         });
 
     });
