@@ -9,10 +9,14 @@ export default class Module{
     namespace:string='';
     tab:string=`\t`;
 
-    listDefaultParametersInRepositoryContructor:string[]=[];
+    listDefaultParametersInRepositoryContructor:string[]=[]; //['PDO $pdo','Dj $jd']
 
     listDefaultParametersInControllerContructor:string[]=[];
 
+    getDefaultParametersForRepositoryConstructor():string{
+        
+        return this.listDefaultParametersInRepositoryContructor.join(',');
+    }
     getModuleFolderName(){
         return this.baseName+"Module";
     }
@@ -41,7 +45,7 @@ export default class Module{
         return `<?php`+`\n`
             +`namespace `+module.namespace+`;`+`\n`
             +`class `+module.getRepositoryName()+` {`+`\n`
-            +tab+`public function __construct(){`+`\n`
+            +tab+`public function __construct(`+module.getDefaultParametersForRepositoryConstructor()+`){`+`\n`
             +tab+``+`\n`
             +tab+`}`+`\n`
             +`}`+`\n`

@@ -540,7 +540,7 @@ function activate(context: vscode.ExtensionContext) {
                         console.log(resolvedNamespace);
                     }
 
-                    
+                    //in the future this must be readed from a config file, something like "predefinedRepositoryContructorParams" 
                     m.listDefaultParametersInRepositoryContructor.push("PDO $pdo");
                     m.namespace=resolvedNamespace;
                     let templateRepo=Module.getTemplateForRepository(m);
