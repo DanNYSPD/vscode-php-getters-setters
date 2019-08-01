@@ -484,21 +484,9 @@ class Resolver {
 
         vscode.window.showInformationMessage(message);
     }
-}
 
-function activate(context: vscode.ExtensionContext) {
-    let resolver = new Resolver;
-
-    let insertGetter = vscode.commands.registerCommand('phpGettersSetters.insertGetter', () => resolver.insertGetter());
-    let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
-    let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
-    let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
-    let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
-    let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
-    let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
-    //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
-    let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value) => {
-    //let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (uri:vscode.Uri) => {
+    addModule(value){
+         //let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (uri:vscode.Uri) => {
         //console.log(uri.fsPath);
         console.log(value)
         let d: vscode.InputBoxOptions={
@@ -561,8 +549,23 @@ function activate(context: vscode.ExtensionContext) {
 
           //now i can create the files  
         });
+    }
+}
 
-    });
+ 
+
+function activate(context: vscode.ExtensionContext) {
+    let resolver = new Resolver;
+
+    let insertGetter = vscode.commands.registerCommand('phpGettersSetters.insertGetter', () => resolver.insertGetter());
+    let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
+    let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
+    let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
+    let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
+    let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
+    let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
+    //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
+    let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value)=>{resolver.addModule(value)});
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
