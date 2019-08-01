@@ -13,7 +13,9 @@ export default class Module{
 
     listDefaultParametersInControllerContructor:string[]=[];
 
-
+    getModuleFolderName(){
+        return this.baseName+"Module";
+    }
      getRepositoryName():string{
         return this.baseName+`Repository`;
     }

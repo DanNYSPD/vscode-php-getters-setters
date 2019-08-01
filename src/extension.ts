@@ -509,9 +509,11 @@ function activate(context: vscode.ExtensionContext) {
         vscode.window.showInputBox(undefined,undefined).then((valuein)=>{
             console.log(""+valuein);
             console.log(value.path)
-            valuein=valuein+"Module";
+            
+            let m= new Module();
+            m.baseName=valuein;
           //let folderModule=  path.join(value.path,valuein)
-          let folderModule=  path.join(value.fsPath,valuein) //at least at windows I have to use fsPath
+          let folderModule=  path.join(value.fsPath,m.getModuleFolderName()) //at least at windows I have to use fsPath
           if(!fs.existsSync(folderModule)){
             fs.mkdir(folderModule,function(err:NodeJS.ErrnoException){
                 if(err){
@@ -538,8 +540,7 @@ function activate(context: vscode.ExtensionContext) {
                         console.log(resolvedNamespace);
                     }
 
-                    let m= new Module();
-                    m.baseName=valuein;
+                    
                     m.listDefaultParametersInRepositoryContructor.push("PDO $pdo");
                     m.namespace=resolvedNamespace;
                     let templateRepo=Module.getTemplateForRepository(m);
