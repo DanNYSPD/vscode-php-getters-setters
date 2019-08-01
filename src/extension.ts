@@ -509,6 +509,7 @@ function activate(context: vscode.ExtensionContext) {
         vscode.window.showInputBox(undefined,undefined).then((valuein)=>{
             console.log(""+valuein);
             console.log(value.path)
+            valuein=valuein+"Module";
           //let folderModule=  path.join(value.path,valuein)
           let folderModule=  path.join(value.fsPath,valuein) //at least at windows I have to use fsPath
           if(!fs.existsSync(folderModule)){
@@ -525,18 +526,22 @@ function activate(context: vscode.ExtensionContext) {
                         composer = JSON.parse(rawdata);
                     }
                     let ComposerObj= new Composer(composer);
+                    let resolvedNamespace='';
                     if(composer && ComposerObj.hasPSR4()){
                         //debo remover la parte del root 
                         let root=vscode.workspace.rootPath;
                         
                         let indexTheyDiffer=PathUtils.getIndexOfDifference(root,folderModule);
                         let subfolder=folderModule.substr(indexTheyDiffer);
+                        resolvedNamespace= ComposerObj.hasPathInNamespaces(subfolder);
                         console.log(subfolder);
+                        console.log(resolvedNamespace);
                     }
 
                     let m= new Module();
                     m.baseName=valuein;
                     m.listDefaultParametersInRepositoryContructor.push("PDO $pdo");
+                    m.namespace=resolvedNamespace;
                     let templateRepo=Module.getTemplateForRepository(m);
                     let templateModel=Module.getTemplateForModel(m);
                     let templateController=Module.getTemplateForController(m);
