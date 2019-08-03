@@ -16,6 +16,7 @@ import Module from './Module';
 import { Names } from './Names';
 import Composer from './Composer';
 import PathUtils from './PathUtils';
+import Functions from './FunctionDefinition';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -550,6 +551,46 @@ class Resolver {
           //now i can create the files  
         });
     }
+    /**
+     * Adds a selected method to its Controller.
+     * For example, we have a BookRepository and we are positioned at some method, if this command is called then a method with the same name
+     * will be added in the controller BookController only if one with the same name doesn't exists.
+     * 
+     * Aditional feactures: inside this new created method, a call to this repository will be added too. 
+     */
+    addMethodToController(){
+        let editor=this.activeEditor();
+
+        let line =editor.document.lineAt(editor.selection.active.line)
+        if(!line.text.includes("function")){
+            this.showErrorMessage("No es una funcion");
+            return;
+
+
+
+        }
+        if(!editor.document.fileName.toUpperCase().includes("REPOSITORY")){
+            this.showErrorMessage("No es una clase Repo");
+            return;
+
+        }
+        //in this point I need to found its Controller. which has the same base name
+        let index=editor.document.fileName.toUpperCase().indexOf("REPOSITORY");
+        let subName =editor.document.fileName.substr(0,index)+"Controller.php";
+
+        if(!fs.existsSync(subName)){
+            this.showErrorMessage("Doenn't exists its controller:"+subName);
+            return;
+        }
+        //if it exist now i will have to inspect all its methods
+
+        let content=fs.readFileSync(subName,'utf8');
+        Functions.getAllFunctionsNameFromAClassFile(content);
+        console.info("es una function");
+        console.info(line.text);
+        
+        
+    }
 }
 
  
@@ -566,6 +607,7 @@ function activate(context: vscode.ExtensionContext) {
     let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
     //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
     let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value)=>{resolver.addModule(value)});
+    let addMethodToController = vscode.commands.registerCommand('phpGettersSetters.addMethodToController', (value)=>{resolver.addMethodToController()});
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
@@ -575,6 +617,7 @@ function activate(context: vscode.ExtensionContext) {
     
 
 	context.subscriptions.push(addModule);
+	context.subscriptions.push(addMethodToController);
 
 }
 

@@ -113,6 +113,10 @@
             {
                 "command": "phpGettersSetters.addModule",
                 "title": "Adds a module"
+            },
+            {
+                "command": "phpGettersSetters.addMethodToController",
+                "title": "Adds a method o its controller"
             }
         ],
         "menus": {
