@@ -59,7 +59,7 @@ class Resolver {
         return vscode.window.activeTextEditor;
     }
 
-    closingClassLine() {
+    closingClassLine() {        
         const editor = this.activeEditor();
         //search starting by the last }, which in a PHP oriented style means that the last } is the end of class.
         for (let lineNumber = editor.document.lineCount - 1; lineNumber > 0; lineNumber--) {
@@ -73,7 +73,20 @@ class Resolver {
 
         return null;
     }
+    openingClassLine() {
+        const editor = this.activeEditor();
+        //search starting by the last }, which in a PHP oriented style means that the last } is the end of class.
+        for (let lineNumber =0; lineNumber <  editor.document.lineCount; lineNumber++) {
+            const line = editor.document.lineAt(lineNumber);
+            const text = line.text.trim();
 
+            if (text.includes('{')) {
+                return line;
+            }
+        }
+
+        return null;
+    }
     insertGetter() {
         const editor = this.activeEditor();
         let property = null;
@@ -384,7 +397,7 @@ class Resolver {
             }
         });
       
-
+        //start creating the templates for the class properties
         let template='';
         lstparametersObj.forEach(element => {
             if(lstProperties.find(x=>x==element.getName())){
@@ -425,9 +438,15 @@ class Resolver {
        if(!template){
            template='';
        }
-       this.renderTemplate(template).then(success=>{
+       let lineNumberBeginning=this.openingClassLine();
+       /*
+       this.renderTemplate(template,lineNumberBeginning.lineNumber+1).then(success=>{
             this.renderTemplate(templateAsingation,constructorBodybegining+1);
-       })
+       })*/
+       //i change the order because if I add first the class propertie then the constructor number line will change and the reference that i have will be obsolete
+       this.renderTemplate(templateAsingation,constructorBodybegining+1).then(success=>{
+        this.renderTemplate(template,lineNumberBeginning.lineNumber+1);
+   })
     }
 
     renderTemplate(template: string,lineNumber?:number) {
