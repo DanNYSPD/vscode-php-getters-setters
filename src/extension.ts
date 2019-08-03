@@ -17,6 +17,7 @@ import { Names } from './Names';
 import Composer from './Composer';
 import PathUtils from './PathUtils';
 import Functions from './FunctionDefinition';
+import FunctionDefinition from './FunctionDefinition';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -585,10 +586,33 @@ class Resolver {
         //if it exist now i will have to inspect all its methods
 
         let content=fs.readFileSync(subName,'utf8');
-        Functions.getAllFunctionsNameFromAClassFile(content);
-        console.info("es una function");
+        let functionNames=Functions.getAllFunctionsNameFromAClassFile(content);
+        let functionName=FunctionDefinition.getFunctionNameSingleLine(line.text);
+       let founded=  functionNames.find(x=>x.name==functionName)
+       if(founded){
+            this.showErrorMessage("Function: " +functionName+" already exist!")
+            return;
+       }
+       //if it's null, I must add the method
+       // console.info("es una function");
         console.info(line.text);
-        
+        const functionDef=new FunctionDefinition();
+        functionDef.name=functionName;
+
+        //I must change to the editing file
+        //vscode.extensions.getExtension.
+        let uri:vscode.Uri = vscode.Uri.parse(subName);
+        //with this I change to the controller    
+        vscode.workspace.openTextDocument(subName).then((some)=>{
+            
+            //console.info(some);
+            //with this I change the activeTextEditor, in this case to the controller   
+            vscode.window.showTextDocument(some).then(val=>{
+                this.renderTemplate(FunctionDefinition.getTemplateMethod(functionDef));
+                this.showInformationMessage("Function: "+functionDef.name+" added!")   
+            })
+            
+        });
         
     }
 }

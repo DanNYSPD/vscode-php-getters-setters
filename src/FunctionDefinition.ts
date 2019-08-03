@@ -36,7 +36,7 @@ export default class FunctionDefinition{
            if(arrLines[numberLine].includes('(')&& arrLines[numberLine].includes(')')){
                 //now i gona split by whitespaces
                 let signatureParts=arrLines[numberLine].split(' ');
-                let functionName=StringUtils.getTextBetween("function","(",arrLines[numberLine]);
+                let functionName=this.getFunctionNameSingleLine(arrLines[numberLine]);
                 console.log(functionName);
                 console.log(signatureParts);
                 let functionDefinition= new FunctionDefinition();
@@ -45,7 +45,29 @@ export default class FunctionDefinition{
                 functionDefinition.numberLineBeginning=numberLine;
                 functionDefinition.numberLineEnd=numberLine;
                 functions.push(functionDefinition);
+           }else {
+               //multiline declaration
+               // I will consider the signature end the nearest ")" after the reserved word function
+
            }
        }
+
+
+
+       return functions;
+    }
+
+    static getFunctionNameSingleLine(str:string):string{
+        return StringUtils.getTextBetween("function","(",str);
+
+    }
+
+    static getTemplateMethod(functionDef:FunctionDefinition){
+        const tab="\t";
+        return ``+
+        tab+`public function `+functionDef.name+`(`+``+`){`+`\n`+
+        tab+``+`\n`+
+        tab+`}`+`\n`
+        ;    
     }
 }
