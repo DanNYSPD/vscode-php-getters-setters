@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import StringUtils from './StringUtils';
+import DocumentModel from './Extras/DocumentModel';
 export default class FunctionDefinition{
 
     name:string;
@@ -11,14 +12,7 @@ export default class FunctionDefinition{
     singleLineFunctionSignature:boolean;
 
     static getAllFunctionsNameFromAClassFile(content:string){
-        let sep="";
-        if(content.includes('\r\n')){
-            console.warn("separador linux")
-            sep='\r\n';
-        }else if(content.includes('\n')){
-            console.warn("separador windows")
-            sep='\n';
-        }
+        let sep=DocumentModel.getNewLine(content);
        //let arrLines= content.split(os.EOL);
        let arrLines= content.split(sep);
        let arrayFunctionsNumberLines=[]; 
@@ -62,11 +56,11 @@ export default class FunctionDefinition{
 
     }
 
-    static getTemplateMethod(functionDef:FunctionDefinition){
+    static getTemplateMethod(functionDef:FunctionDefinition,autoCall:string=null){
         const tab="\t";
         return ``+
         tab+`public function `+functionDef.name+`(`+``+`){`+`\n`+
-        tab+``+`\n`+
+        tab+``+(autoCall?tab+autoCall:``)+`\n`+
         tab+`}`+`\n`
         ;    
     }

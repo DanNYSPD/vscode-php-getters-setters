@@ -18,4 +18,6 @@ export default class Classe{
     static  autoCompleteCOntructorProperties(){
 
     }
+
+    autoCallToAdd:string;
 }

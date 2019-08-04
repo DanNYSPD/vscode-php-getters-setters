@@ -606,6 +606,7 @@ class Resolver {
 
         let content=fs.readFileSync(subName,'utf8');
         let functionNames=Functions.getAllFunctionsNameFromAClassFile(content);
+        
         let functionName=FunctionDefinition.getFunctionNameSingleLine(line.text);
        let founded=  functionNames.find(x=>x.name==functionName)
        if(founded){
@@ -617,9 +618,17 @@ class Resolver {
         console.info(line.text);
         const functionDef=new FunctionDefinition();
         functionDef.name=functionName;
+       //i save the curren file Name(After I will used to search if it is inside its controller class defined as a propertie)
+       let clase = new Classe();
+       clase.name=editor.document.fileName;
+       
+       let propertieName=editor.document.fileName;
+       propertieName= propertieName.substr(propertieName.lastIndexOf(path.sep)+1);
+       propertieName= propertieName.substr(0,propertieName.indexOf('.'));
 
         //I must change to the editing file
         //vscode.extensions.getExtension.
+
         let uri:vscode.Uri = vscode.Uri.parse(subName);
         //with this I change to the controller    
         vscode.workspace.openTextDocument(subName).then((some)=>{
@@ -627,7 +636,15 @@ class Resolver {
             //console.info(some);
             //with this I change the activeTextEditor, in this case to the controller   
             vscode.window.showTextDocument(some).then(val=>{
-                this.renderTemplate(FunctionDefinition.getTemplateMethod(functionDef));
+                /*falta ver si tiene propiedad con el nombre de la clase en lowercase, si es asi, 
+                *agragar dentro de este metodo la llamada a esta
+                */
+              let propertiesController= Property.getProperties(some);
+
+             let foundProperty= propertiesController.find(x=>x==Names.toLowerCamelCase( propertieName));
+                
+                let tem=foundProperty?`$this->`+propertieName+`->`+functionName+`();`:``;
+                this.renderTemplate(FunctionDefinition.getTemplateMethod(functionDef,tem));
                 this.showInformationMessage("Function: "+functionDef.name+" added!")   
             })
             

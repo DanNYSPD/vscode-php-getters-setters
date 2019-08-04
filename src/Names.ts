@@ -30,7 +30,8 @@ export class Names {
             return loweCamel.charAt(0).toLowerCase()+loweCamel.slice(1);
         }else{
             //if names doesn't include underscore just make the firts letter lowercase
-            return name.charAt(0).toLowerCase()+name.slice(1).toLowerCase()
+            //return name.charAt(0).toLowerCase()+name.slice(1).toLowerCase()
+            return name.charAt(0).toLowerCase()+name.slice(1);
         }
     }
 }
