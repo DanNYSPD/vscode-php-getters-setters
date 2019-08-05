@@ -18,6 +18,8 @@ import Composer from './Composer';
 import PathUtils from './PathUtils';
 import Functions from './FunctionDefinition';
 import FunctionDefinition from './FunctionDefinition';
+import Router from './Extras/PHP/Router';
+import AxiosConsumer from './Extras/Consumers/AxiosConsumer';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -651,6 +653,37 @@ class Resolver {
         });
         
     }
+
+    generateClientForApi(){
+        let active=this.activeEditor();
+        if(!active.document.fileName.toUpperCase().includes('ROUTE')){
+            this.showErrorMessage("this file doesn't seem to be a valid router file");
+            return;
+        }
+       let endpoints=  Router.readRoutes(active.document);
+        //depending on the client type generate the client(axios, curl, phpCurl, httpOkClient(java), my own c# client,etc)
+        let template='';
+        endpoints.forEach(x=>{
+            
+            template+=AxiosConsumer.getTemplate(x);
+        });
+        let options:vscode.InputBoxOptions={
+            value:active.document.fileName//active.document.fileName.lastIndexOf(path.sep)
+        };
+        vscode.window.showInputBox(options,undefined).then((valuein)=>{
+            //this.renderTemplate(template);
+            if(!fs.existsSync(valuein)){
+                fs.writeFile(valuein,template,function(err){
+                    if(!err){
+                        this.showInformationMessage("Custumer Created")
+                    }
+                })
+            }else{
+                this.showErrorMessage(`File `+valuein+` already exists`);
+            }
+        });
+        
+    }
 }
 
  
@@ -668,7 +701,7 @@ function activate(context: vscode.ExtensionContext) {
     //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
     let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value)=>{resolver.addModule(value)});
     let addMethodToController = vscode.commands.registerCommand('phpGettersSetters.addMethodToController', (value)=>{resolver.addMethodToController()});
-
+    let generateClientForApi=vscode.commands.registerCommand('phpGettersSetters.generateClientForApi', (value)=>{resolver.generateClientForApi()});
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
@@ -677,7 +710,9 @@ function activate(context: vscode.ExtensionContext) {
     
 
 	context.subscriptions.push(addModule);
-	context.subscriptions.push(addMethodToController);
+    context.subscriptions.push(addMethodToController);
+    
+	context.subscriptions.push(generateClientForApi);
 
 }
 

@@ -31,5 +31,5 @@ export default class DocumentModel {
             newLine='\n';
         }
         return newLine; 
-    }
+    }    
 }

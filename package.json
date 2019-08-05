@@ -117,6 +117,10 @@
             {
                 "command": "phpGettersSetters.addMethodToController",
                 "title": "Adds a method o its controller"
+            },
+            {
+                "command": "phpGettersSetters.generateClientForApi",
+                "title": "Adds generates the consumer"
             }
         ],
         "menus": {
