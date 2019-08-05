@@ -24,14 +24,21 @@ export default class Router{
         //I put "get(" because is posible that there would be methods that include "get"  in their method name
         if( StringUtils.includesOr(line,['get(','post']) &&    
             StringUtils.includes(line,['(',')',';'])){
-            let index=StringUtils.getIndexPluslengthOfFirst(line,['get','post']);
-            let part=line.substr(index).trim();
+            line=line.trim()    
+            if(StringUtils.startsWithOr(line,['#','//','/*'])){
+                // is a comment !!, ignore! (note: this doesn't consider multiline comments)
+                return null;
+            }
+            
+
+            let indexWithLength=StringUtils.getIndexPluslengthOfFirst(line,['get(','post(']);
+            let part=line.substr(indexWithLength).trim();
             
             //As I know that eadither get or post exists I don't check that it is major than -1.
 
             //now I had removed the part until post or get, so I need to get The first paramter of the method, so I get the postion until the first ,
             part=part.substr(0,part.indexOf(','));
-            part=part.substr(part.indexOf('(')+1);
+           // part=part.substr(part.indexOf('(')+1);
             console.info(part);
             let endPoint= new EndPoint();
             endPoint.path=part;

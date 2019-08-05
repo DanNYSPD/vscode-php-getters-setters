@@ -59,4 +59,19 @@ export default class StringUtils{
         }
         return -1;
     }
+    /**
+     * returns true if str star with any item value of strings
+     * @param str 
+     * @param strings 
+     */
+    static startsWithOr(str:string,strings:string[]){
+        let i=0;
+        while(i<strings.length ){
+            if(str.startsWith(strings[i])){
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
 }
