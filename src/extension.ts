@@ -690,7 +690,13 @@ class Resolver {
 
         vscode.window.showQuickPick(['vs','snippet']).then(value=>{
             console.log(value)
-            const text=GenerateTemplate.generateForVs(active.document.getText(active.selection));
+            let text;
+            if(value=='vs'){
+                 text=GenerateTemplate.generateForVs(active.document.getText(active.selection));
+            }else{
+                text=GenerateTemplate.generateTemplateForSnippet(active.document.getText(active.selection));
+
+            }
             console.log(text);
             vscode.window.showInputBox({value:vscode.workspace.rootPath}).then(path=>{
                 if(!fs.existsSync(path)){
