@@ -20,6 +20,7 @@ import Functions from './FunctionDefinition';
 import FunctionDefinition from './FunctionDefinition';
 import Router from './Extras/PHP/Router';
 import AxiosConsumer from './Extras/Consumers/AxiosConsumer';
+import GenerateTemplate from './Extras/GenerateTemplateFromText/GenerateTemplate';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -684,6 +685,28 @@ class Resolver {
         });
         
     }
+    generateTemplateFor(){
+        let active=this.activeEditor();
+
+        vscode.window.showQuickPick(['vs','snippet']).then(value=>{
+            console.log(value)
+            const text=GenerateTemplate.generateForVs(active.document.getText(active.selection));
+            console.log(text);
+            vscode.window.showInputBox({value:vscode.workspace.rootPath}).then(path=>{
+                if(!fs.existsSync(path)){
+                    fs.writeFile(path,text,err=>{
+                        if(!err){
+                            this.showInformationMessage("Snippet creaded at "+path)
+                        }else{
+                            this.showErrorMessage(err.message+"no:"+err.errno)
+                        }
+                    })
+                }else{
+                    this.showErrorMessage("Archivo existe")
+                }
+            })
+        });
+    }
 }
 
  
@@ -701,7 +724,9 @@ function activate(context: vscode.ExtensionContext) {
     //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo
     let addModule = vscode.commands.registerCommand('phpGettersSetters.addModule', (value)=>{resolver.addModule(value)});
     let addMethodToController = vscode.commands.registerCommand('phpGettersSetters.addMethodToController', (value)=>{resolver.addMethodToController()});
+
     let generateClientForApi=vscode.commands.registerCommand('phpGettersSetters.generateClientForApi', (value)=>{resolver.generateClientForApi()});
+    let generateTemplateFor=vscode.commands.registerCommand('phpGettersSetters.generateTemplateFor', (value)=>{resolver.generateTemplateFor()});
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
@@ -713,6 +738,7 @@ function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(addMethodToController);
     
 	context.subscriptions.push(generateClientForApi);
+	context.subscriptions.push(generateTemplateFor);
 
 }
 
