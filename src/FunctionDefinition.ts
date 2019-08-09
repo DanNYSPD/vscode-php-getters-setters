@@ -59,7 +59,7 @@ export default class FunctionDefinition{
     static getTemplateMethod(functionDef:FunctionDefinition,autoCall:string=null){
         const tab="\t";
         return ``+
-        tab+`public function `+functionDef.name+`(`+``+`){`+`\n`+
+        tab+`public function `+functionDef.name+`(Request $request,Response $response`+``+`):Response{`+`\n`+
         tab+``+(autoCall?tab+autoCall:``)+`\n`+
         tab+`}`+`\n`
         ;    
