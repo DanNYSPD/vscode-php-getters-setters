@@ -74,4 +74,9 @@ export default class StringUtils{
         }
         return false;
     }
+
+    static count(needle:string,str:string)
+    {
+        return needle.split(needle).length -1;
+    }
 }
