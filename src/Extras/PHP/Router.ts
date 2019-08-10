@@ -87,7 +87,7 @@ export default class Router{
        for (let i = 0; i < arrLines.length; i++) {
         let endPoint=this.getEndPointFromLine(arrLines[i],true);
         if(endPoint!=null){
-            endPoint.numberLine=i;
+            endPoint.numberLine=i;//number line where the path was founded (not the controller linenumber)
 
             endPoints.push(endPoint);
         }

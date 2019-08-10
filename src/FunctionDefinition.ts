@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import StringUtils from './StringUtils';
 import DocumentModel from './Extras/DocumentModel';
+import * as vscode from 'vscode';
 export default class FunctionDefinition{
 
     name:string;
@@ -63,5 +64,20 @@ export default class FunctionDefinition{
         tab+``+(autoCall?tab+autoCall:``)+`\n`+
         tab+`}`+`\n`
         ;    
+    }
+
+    static getFunctionLineNumberFromDoc(document: vscode.TextEditor,functionName:string){
+        document.document.lineCount
+        let found=false,i=0;
+        while(!found&&i<document.document.lineCount){
+            if(
+                document.document.lineAt(i).text.includes("function")
+               && document.document.lineAt(i).text.includes(functionName)
+                ){
+                    return i;
+            }
+            i++;
+        }
+        return -1;
     }
 }

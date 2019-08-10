@@ -11,6 +11,8 @@ export default class StringUtils{
     {
         let iniIndex=text.indexOf(initialMark);
         let endIndex=text.indexOf(endMark);
+        //let endIndex=text.substr(iniIndex).indexOf(endMark);
+       
 
         if(iniIndex!=-1 && endIndex!=1){
             if(iniIndex<endIndex){

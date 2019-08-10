@@ -21,6 +21,8 @@ import FunctionDefinition from './FunctionDefinition';
 import Router from './Extras/PHP/Router';
 import AxiosConsumer from './Extras/Consumers/AxiosConsumer';
 import GenerateTemplate from './Extras/GenerateTemplateFromText/GenerateTemplate';
+import { RelativePattern } from 'vscode';
+import StringUtils from './StringUtils';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -724,10 +726,60 @@ class Resolver {
             }
             let content=fs.readFileSync(routePath,'utf8');
             let endpoints=  Router.readFromFile(content);
-            let paths =endpoints.map(x=>x.path);
+            //let paths =endpoints.map(x=>x.path+"\n" +x.controllerClassName+":"+x.controllerClassMethod);
+            let paths =endpoints.map(x=>x.path+"\t ->" +x.controllerClassName+":"+x.controllerClassMethod+"..");
 
             vscode.window.showQuickPick(paths).then(selectedValue=>{
                 this.showInformationMessage("Sleccuoionanste"+selectedValue)
+                let className= StringUtils.getTextBetween('->',':',selectedValue);
+                let method=StringUtils.getTextBetween(':','..',selectedValue)
+                let endpoint=endpoints.find(z=>z.controllerClassName==className&&z.controllerClassMethod==method);
+                if(null==endpoint){
+                    this.showErrorMessage("Cannot be found")
+                }
+                const ignore = [
+                    '**/build/**/*',
+                    '**/out/**/*',
+                    '**/dist/**/*',
+                ];
+                
+                const ignoreWorkspace = [
+                    ...ignore,
+                    'node_modules/**/*',
+                    'vendor/**/*',
+                ];
+                  vscode.workspace.findFiles(
+                    new RelativePattern(vscode.workspace.rootPath, `{**/`+className+`.php}`),
+                    new RelativePattern(vscode.workspace.rootPath, `{${ignoreWorkspace.join(',')}}`),
+                ).then((urls : vscode.Uri[])=>{
+                   // console.log(urls)
+                    if(urls.length==1){
+                        //open directly 
+                        console.log(urls[0]);
+                        let file=urls[0];
+                        vscode.workspace.openTextDocument(file).then(document=>{
+                            //now I need to go to the line
+                            if(document.lineCount<endpoint.numberLine){
+                                console.error("NUmber line is minor")
+                            }
+                            console.info(endpoint)
+                            vscode.window.showTextDocument(document).then((editor:vscode.TextEditor)=>{
+                                // according to this line https://github.com/Microsoft/vscode/issues/6695 is posile to  select the fule
+                                let number=FunctionDefinition.getFunctionLineNumberFromDoc(editor,endpoint.controllerClassMethod);
+                                console.log(endpoint.controllerClassMethod)
+                                console.log(number)
+
+                                let range=document.lineAt(number).range;
+                                 
+                                editor.selection =  new vscode.Selection(range.start, range.end);
+                                editor.revealRange(range);
+                            });
+                            
+                        })
+                    }else{
+                        //make the programmer choose
+                    }
+                });
             })
             //now I must read
     }
