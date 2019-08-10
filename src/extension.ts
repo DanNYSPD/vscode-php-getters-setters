@@ -720,10 +720,28 @@ class Resolver {
     listRoutesAndGo(){
 
 
-          let routePath=  vscode.workspace.rootPath+path.sep +"appconfig"+path.sep+"routes.php";
-            if(!fs.existsSync(routePath)){
-                this.showErrorMessage("Path doesnt exist"+routePath)
+          let routePath=''
+         
+            
+            let projectPathCOnfig=path.join(vscode.workspace.rootPath,"project.json");
+            if(!fs.existsSync(projectPathCOnfig)){
+                if(!fs.existsSync(routePath)){
+                
+                    this.showErrorMessage("Path doesnt exist"+routePath+"or "+projectPathCOnfig+"either")
+                }
+                routePath= vscode.workspace.rootPath+path.sep +"appconfig"+path.sep+"routes.php";
+            }else
+            {
+                let file=fs.readFileSync(projectPathCOnfig,'utf8');
+                let config=JSON.parse(file);
+                routePath='';
+                if(config.routes){
+                    let relativePathToProjectRoot=config.routes[0];
+                    relativePathToProjectRoot=PathUtils.normalizePath(relativePathToProjectRoot);
+                    routePath=  path.join(vscode.workspace.rootPath,relativePathToProjectRoot);
+                }
             }
+
             let content=fs.readFileSync(routePath,'utf8');
             let endpoints=  Router.readFromFile(content);
             //let paths =endpoints.map(x=>x.path+"\n" +x.controllerClassName+":"+x.controllerClassMethod);
@@ -748,6 +766,10 @@ class Resolver {
                     'node_modules/**/*',
                     'vendor/**/*',
                 ];
+
+                /** For improving performance in the next version I will get the real src paths reading the composer file and taking its Namespaces path, so I won't need to scan the whole project */
+
+
                   vscode.workspace.findFiles(
                     new RelativePattern(vscode.workspace.rootPath, `{**/`+className+`.php}`),
                     new RelativePattern(vscode.workspace.rootPath, `{${ignoreWorkspace.join(',')}}`),

@@ -52,9 +52,9 @@ export default class Router{
                 // the paths walsway have the next forms  
                 
                 /**
-                 * "$router=  $app->post('/VerificarVale', ValeModuleController::class.':VerificarVale');"
-                 * "$app->post('/VerificarVale', ValeModuleController::class.':VerificarVale');"
-                 * "$app->post('/VerificarVale', "ValeModuleController".':VerificarVale');"
+                 * "$router=  $app->post('/CheckStore', StoreModuleController::class.':CheckStore');"
+                 * "$app->post('/CheckStores', StoreModuleController::class.':CheckStores');"
+                 * "$app->post('/CheckStores', "StoreModuleController".':CheckStores');"
                  */
 
                  //is posible to to define a function on it but is not good and is not my way, so I won't consider it

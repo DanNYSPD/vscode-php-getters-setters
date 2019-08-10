@@ -14,4 +14,6 @@ export default class EndPoint{
 
     controllerClassMethod:string;
 
+    controllerNamespace:string;//this will have the namespace, i can ge it from routes imports
+
 }
