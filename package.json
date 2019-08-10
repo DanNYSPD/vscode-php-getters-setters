@@ -126,6 +126,10 @@
             {
                 "command": "phpGettersSetters.generateTemplateFor",
                 "title": "Adds generates the template"
+            },
+            {
+                "command": "phpGettersSetters.listRoutesAndGo",
+                "title": "Go to path"
             }
         ],
         "menus": {

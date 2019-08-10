@@ -712,6 +712,24 @@ class Resolver {
                 }
             })
         });
+
+       
+    }
+    listRoutesAndGo(){
+
+
+          let routePath=  vscode.workspace.rootPath+path.sep +"appconfig"+path.sep+"routes.php";
+            if(!fs.existsSync(routePath)){
+                this.showErrorMessage("Path doesnt exist"+routePath)
+            }
+            let content=fs.readFileSync(routePath,'utf8');
+            let endpoints=  Router.readFromFile(content);
+            let paths =endpoints.map(x=>x.path);
+
+            vscode.window.showQuickPick(paths).then(selectedValue=>{
+                this.showInformationMessage("Sleccuoionanste"+selectedValue)
+            })
+            //now I must read
     }
 }
 
@@ -733,6 +751,10 @@ function activate(context: vscode.ExtensionContext) {
 
     let generateClientForApi=vscode.commands.registerCommand('phpGettersSetters.generateClientForApi', (value)=>{resolver.generateClientForApi()});
     let generateTemplateFor=vscode.commands.registerCommand('phpGettersSetters.generateTemplateFor', (value)=>{resolver.generateTemplateFor()});
+
+    let listRoutesAndGo=vscode.commands.registerCommand('phpGettersSetters.listRoutesAndGo', (value)=>{resolver.listRoutesAndGo()});
+
+
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
     context.subscriptions.push(insertGetterAndSetter);
@@ -745,6 +767,7 @@ function activate(context: vscode.ExtensionContext) {
     
 	context.subscriptions.push(generateClientForApi);
 	context.subscriptions.push(generateTemplateFor);
+	context.subscriptions.push(listRoutesAndGo);
 
 }
 

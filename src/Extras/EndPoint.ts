@@ -6,4 +6,12 @@ export default class EndPoint{
 
     name:string;//the methods name
 
+    filePath:string;
+
+    numberLine:number;
+
+    controllerClassName:string;
+
+    controllerClassMethod:string;
+
 }
