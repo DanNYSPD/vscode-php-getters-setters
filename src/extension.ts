@@ -772,7 +772,7 @@ class Resolver {
                                 let range=document.lineAt(number).range;
                                  
                                 editor.selection =  new vscode.Selection(range.start, range.end);
-                                editor.revealRange(range);
+                                editor.revealRange(range,vscode.TextEditorRevealType.AtTop);
                             });
                             
                         })
