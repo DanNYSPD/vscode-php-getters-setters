@@ -648,7 +648,7 @@ class Resolver {
 
              let foundProperty= propertiesController.find(x=>x==Names.toLowerCamelCase( propertieName));
                 
-                let tem=foundProperty?`$this->`+propertieName+`->`+functionName+`();`:``;
+                let tem=foundProperty?`$this->`+Names.toLowerCamelCase(propertieName)+`->`+functionName+`();`:``;
                 this.renderTemplate(FunctionDefinition.getTemplateMethod(functionDef,tem));
                 this.showInformationMessage("Function: "+functionDef.name+" added!")   
             })
