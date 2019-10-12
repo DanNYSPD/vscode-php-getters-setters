@@ -2,6 +2,7 @@ import StringUtils from "../../StringUtils";
 import * as vscode from 'vscode';
 import EndPoint from "../Endpoint";
 import DocumentModel from "../DocumentModel";
+import { isRegExp } from "util";
 
 export default class Router{
 
@@ -55,6 +56,11 @@ export default class Router{
                  * "$router=  $app->post('/CheckStore', StoreModuleController::class.':CheckStore');"
                  * "$app->post('/CheckStores', StoreModuleController::class.':CheckStores');"
                  * "$app->post('/CheckStores', "StoreModuleController".':CheckStores');"
+                 * 
+                 * Octuber 11. Now this will support the next format.
+                 * $app->post('/v1/acceso/login', 'AccesoController:ValidarCredenciales');
+                * in this case 'AccesoController' is the name og the class
+                 * 
                  */
 
                  //is posible to to define a function on it but is not good and is not my way, so I won't consider it
@@ -62,8 +68,16 @@ export default class Router{
                 if(line.includes('::')){
                     controllerPart= StringUtils.getTextBetween(',','::',line);
                 }else{
+                     
                  controllerPart= StringUtils.getTextBetween(',',':',line);
-                    controllerPart= controllerPart.substr(1,controllerPart.length-4)// here i remove foru characters that are `"` (end of string paramtere) `.`(concatation) `'` (start of method string pararmaters)
+                    if(controllerPart.includes('.')){ //if has this value it means is concatenation
+                        
+                        controllerPart= controllerPart.substr(1,controllerPart.length-4)// here i remove foru characters that are `"` (end of string paramtere) `.`(concatation) `'` (start of method string pararmaters)
+                    }else{//otherwise only erase ' or "
+                        //$app->post('/v1/access', 'AccessController:MethodName');
+                        controllerPart=controllerPart.replace('\'','');
+                        controllerPart=controllerPart.replace('\"','');
+                    }
                 }
                 endPoint.controllerClassName=controllerPart;
 
