@@ -10,7 +10,7 @@ export default class ResolveNamespace{
 
     static hasNamespace(className:string ):boolean{
         return className.includes("\\")
-        return false;
+        
     }
 
     static resolveNamePsr4(folderModule:string,absolutePath:boolean=false){
@@ -44,8 +44,7 @@ export default class ResolveNamespace{
                return  path.join(root,resolvedPath);
             }
             return resolvedPath;
-            console.log(subfolder);
-            console.log(resolvedNamespace);
+        
         }
 
     }
