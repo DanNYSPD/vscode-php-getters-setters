@@ -723,7 +723,7 @@ class Resolver {
 
 
           let routePath=''
-         
+            let routerPaths=[];
             
             let projectPathCOnfig=path.join(vscode.workspace.rootPath,"project.json");
             if(!fs.existsSync(projectPathCOnfig)){
@@ -732,22 +732,31 @@ class Resolver {
                     this.showErrorMessage("Path doesnt exist"+routePath+"or "+projectPathCOnfig+"either")
                 }
                 routePath= vscode.workspace.rootPath+path.sep +"appconfig"+path.sep+"routes.php";
+                routerPaths.push(routePath);
             }else
             {
                 let file=fs.readFileSync(projectPathCOnfig,'utf8');
                 let config=JSON.parse(file);
                 routePath='';
                 if(config.routes){
-                    let relativePathToProjectRoot=config.routes[0];
-                    relativePathToProjectRoot=PathUtils.normalizePath(relativePathToProjectRoot);
-                    routePath=  path.join(vscode.workspace.rootPath,relativePathToProjectRoot);
+                    config.routes.forEach(relativePathToProjectRoot => {
+                        relativePathToProjectRoot=PathUtils.normalizePath(relativePathToProjectRoot);
+                        routePath=  path.join(vscode.workspace.rootPath,relativePathToProjectRoot);
+                        routerPaths.push(routePath);
+                    });
+                    
+                    
                 }
             }
-
-            let content=fs.readFileSync(routePath,'utf8');
-            let endpoints=  Router.readFromFile(content);
-            //let paths =endpoints.map(x=>x.path+"\n" +x.controllerClassName+":"+x.controllerClassMethod);
-            let paths =endpoints.map(x=>x.path+"\t ->" +x.controllerClassName+":"+x.controllerClassMethod+"..");
+            let endpoints=[];
+            let paths=[];
+            routerPaths.forEach(routePathItem => {
+                let content=fs.readFileSync(routePathItem,'utf8');
+                endpoints=endpoints.concat(Router.readFromFile(content));
+                //let paths =endpoints.map(x=>x.path+"\n" +x.controllerClassName+":"+x.controllerClassMethod);
+                paths=paths.concat(endpoints.map(x=>x.path+"\t ->" +x.controllerClassName+":"+x.controllerClassMethod+".."));    
+            });
+            
 
             vscode.window.showQuickPick(paths).then(selectedValue=>{
                 this.showInformationMessage("You selected:"+selectedValue)

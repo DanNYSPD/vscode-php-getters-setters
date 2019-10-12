@@ -75,7 +75,7 @@ export default class Composer {
                //the path is where the namespace starts to resolve
                
                if(namespace.startsWith(key)){
-                   //in theory the received namespace will be at least the same length or more
+                   //in theory the received namespace will be at least the same length or more than the declared namespace in the composer file.
                 namespacePath= PathUtils.normalizePath(namespacePath);
                 let indexDifference=PathUtils.getIndexOfDifference(key,namespace);
                 let differ=namespace.substr(indexDifference,namespace.length-indexDifference);
