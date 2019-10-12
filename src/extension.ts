@@ -23,6 +23,8 @@ import AxiosConsumer from './Extras/Consumers/AxiosConsumer';
 import GenerateTemplate from './Extras/GenerateTemplateFromText/GenerateTemplate';
 import { RelativePattern } from 'vscode';
 import StringUtils from './StringUtils';
+import ResolveNamespace from './Extras/PHP/ResolveNamespace';
+import { FILE } from 'dns';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -768,7 +770,12 @@ class Resolver {
                 ];
 
                 /** For improving performance in the next version I will get the real src paths reading the composer file and taking its Namespaces path, so I won't need to scan the whole project */
-
+                if(ResolveNamespace.hasNamespace(className)){
+                    //with this i will try to resolved the relative classPath (without extension) 
+                    className= ResolveNamespace.resolveNamePsr4(className,false);
+                    //is relative becase I use  RelativePattern in the below code to search the class
+                   
+                }
 
                   vscode.workspace.findFiles(
                     new RelativePattern(vscode.workspace.rootPath, `{**/`+className+`.php}`),

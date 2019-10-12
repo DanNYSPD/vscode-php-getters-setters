@@ -65,4 +65,24 @@ export default class Composer {
            
         }
     }
+    getFileFromNamespace(namespace:string):string{
+        for (const key in this.composer.autoload["psr-4"]) {
+            /*
+                *the path separator in the composer is alwasys "/", but this separator could fail on windows where the sep is '\',
+                *so I need to tranform this separator
+                */
+               let namespacePath = this.composer.autoload["psr-4"][key];
+               //the path is where the namespace starts to resolve
+               
+               if(namespace.startsWith(key)){
+                   //in theory the received namespace will be at least the same length or more
+                namespacePath= PathUtils.normalizePath(namespacePath);
+                let indexDifference=PathUtils.getIndexOfDifference(key,namespace);
+                let differ=namespace.substr(indexDifference,namespace.length-indexDifference);
+                return path.join(namespacePath,differ)
+              //  return this.composer.autoload["psr-4"][key]   ;
+               }
+        }
+        return '';
+    }
 }
