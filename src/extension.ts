@@ -748,7 +748,7 @@ class Resolver {
             let paths =endpoints.map(x=>x.path+"\t ->" +x.controllerClassName+":"+x.controllerClassMethod+"..");
 
             vscode.window.showQuickPick(paths).then(selectedValue=>{
-                this.showInformationMessage("Sleccuoionanste"+selectedValue)
+                this.showInformationMessage("You selected:"+selectedValue)
                 let className= StringUtils.getTextBetween('->',':',selectedValue);
                 let method=StringUtils.getTextBetween(':','..',selectedValue)
                 let endpoint=endpoints.find(z=>z.controllerClassName==className&&z.controllerClassMethod==method);
