@@ -65,18 +65,31 @@ export default class Router{
 
                  //is posible to to define a function on it but is not good and is not my way, so I won't consider it
                  let controllerPart='';
-                if(line.includes('::')){
+                if(line.includes('::class')){
                     controllerPart= StringUtils.getTextBetween(',','::',line);
                 }else{
-                     
-                 controllerPart= StringUtils.getTextBetween(',',':',line);
-                    if(controllerPart.includes('.')){ //if has this value it means is concatenation
-                        
-                        controllerPart= controllerPart.substr(1,controllerPart.length-4)// here i remove foru characters that are `"` (end of string paramtere) `.`(concatation) `'` (start of method string pararmaters)
-                    }else{//otherwise only erase ' or "
-                        //$app->post('/v1/access', 'AccessController:MethodName');
+                    const separadorSlim=":";
+                    const separadorLaravel="@";
+                    //because is posible that other framerwroks use :: to call a static method, only if the route definition doesn't have the laravel separator , go to this flow
+                     if(line.includes(separadorSlim)&&!line.includes(separadorLaravel)){
+                        controllerPart= StringUtils.getTextBetween(',',separadorSlim,line);
+                            if(controllerPart.includes('.')){ //if has this value it means is concatenation
+                                
+                                controllerPart= controllerPart.substr(1,controllerPart.length-4)// here i remove foru characters that are `"` (end of string paramtere) `.`(concatation) `'` (start of method string pararmaters)
+                            }else{//otherwise only erase ' or "
+                                //$app->post('/v1/access', 'AccessController:MethodName');
+                                controllerPart=controllerPart.replace('\'','');
+                                controllerPart=controllerPart.replace('\"','');
+                            }
+                    }else if(line.includes(separadorLaravel)){
+                        //this means is a laravel declaration!
+                        //Route::get('photos/popular', 'PhotoController@method');
+                        controllerPart= StringUtils.getTextBetween(',',separadorLaravel,line);
                         controllerPart=controllerPart.replace('\'','');
                         controllerPart=controllerPart.replace('\"','');
+
+                    
+
                     }
                 }
                 endPoint.controllerClassName=controllerPart;
