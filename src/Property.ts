@@ -2,6 +2,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import { Names } from './Names';
 
 export default class Property {
     private description: string = null;
@@ -106,7 +107,8 @@ export default class Property {
     }
 
     generateMethodName(prefix : string) : string {
-        return prefix + this.name.charAt(0).toUpperCase() + this.name.substring(1);
+       // return prefix + this.name.charAt(0).toUpperCase() + this.name.substring(1);
+        return prefix +Names.toCamelCase(this.name);
     }
 
     getDescription() : string {
