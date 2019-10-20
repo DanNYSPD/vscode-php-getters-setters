@@ -380,7 +380,47 @@ class Resolver {
 
 
                 }else{
-                    ///for the next phase (in case that the constructor signature is multiline)
+                    ///support for multiline constructor added!
+                    //here I will search until the next ) which will close the signature.
+                    let j=i+1;//start in the next line
+                    let foundedNextChar=false;
+                    let signatureMethod='';
+                    while(!foundedNextChar){
+                        if(j>=editor.document.lineCount){
+                            console.info("limit reached!");
+                            break;
+                        }
+                        /**
+                         * note: the method end can be "){",")" in the same line that the last parameter or in a empty line
+                         * # scenary with same line
+                         * -----------------------
+                         * | ..$pa){
+                         * ---------------------------------------
+                         * # in a empty line
+                         * --------------- 
+                         * | $pa
+                         * | ){
+                         * ------------------
+                         * # the classic 
+                         * -----------------------
+                         * |.. $pa)
+                         * |{
+                         * --------------
+                         */
+                        if(!editor.document.lineAt(j).text.includes(')')){
+                            
+
+                        }else{
+                            foundedNextChar=true;
+                        }
+                        signatureMethod+=editor.document.lineAt(j).text;
+                        j++;
+                    }
+                    if(foundedNextChar){
+                        signatureMethod=signatureMethod.replace(")",'').replace("{",'');
+                        //now I split the parameters
+                        lstparameters=signatureMethod.split(',');
+                    }
                 }
 
             }
