@@ -130,6 +130,10 @@
             {
                 "command": "phpGettersSetters.listRoutesAndGo",
                 "title": "Go to path"
+            },
+            {
+                "command": "phpGettersSetters.jsonToPhp",
+                "title": "Json to php "
             }
         ],
         "menus": {
@@ -161,6 +165,10 @@
                 ,
                 {
                     "command": "phpGettersSetters.insertConstructorProperties",
+                    "when": "editorLangId == php"
+                },
+                {
+                    "command": "phpGettersSetters.jsonToPhp",
                     "when": "editorLangId == php"
                 }
             ],
@@ -227,8 +235,10 @@
         {
             "key": "ctrl+alt+p",  
             "command": "phpGettersSetters.listRoutesAndGo"
-          
-         
+        },
+        {
+            "key": "ctrl+alt+j",  
+            "command": "phpGettersSetters.jsonToPhp"
         }
     ],
     "scripts": {
