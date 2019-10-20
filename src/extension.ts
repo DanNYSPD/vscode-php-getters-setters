@@ -407,10 +407,7 @@ class Resolver {
                          * |{
                          * --------------
                          */
-                        if(!editor.document.lineAt(j).text.includes(')')){
-                            
-
-                        }else{
+                        if(editor.document.lineAt(j).text.includes(')')){
                             foundedNextChar=true;
                         }
                         signatureMethod+=editor.document.lineAt(j).text;
