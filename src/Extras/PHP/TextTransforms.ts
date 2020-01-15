@@ -12,19 +12,37 @@ export default class TextTransforms{
             }
      toSnakeCase(){
         let active= this.activeEditor();
+        const selections: vscode.Selection[] = active.selections;
         
-        let text=active.document.getText(active.selection);
-        let newText=  Names.toSnakeCase(text);
-        this.render(newText,active.selection.start.line);       
+       active.edit(function(edit: vscode.TextEditorEdit){
+        for (const selection of selections) {
+            let text=active.document.getText(selection);
+            let newText=  Names.toSnakeCase(text);
+            edit.replace(
+                //new vscode.Position(lineNumber, 0),
+                selection,
+                newText
+            );
+        }
+           
+        }).then(
+            success => {
+                
+            },
+            error => {
+               // this.showErrorMessage(`Error generating functions: ` + error);
+            }
+        );      
     }
   
  
-    render(template,lineNumber){
-        let editor= this.activeEditor();
+    render(editor,template,lineNumber){
+        
 
         return   editor.edit(function(edit: vscode.TextEditorEdit){
             edit.replace(
-                new vscode.Position(lineNumber, 0),
+                //new vscode.Position(lineNumber, 0),
+                lineNumber,
                 template
             );
         }).then(
