@@ -34,4 +34,8 @@ export class Names {
             return name.charAt(0).toLowerCase()+name.slice(1);
         }
     }
+
+    static toSnakeCase(name:string){
+        return name.replace(/\.?([A-Z])/g, function (x,y){return "_" + y.toLowerCase()}).replace(/^_/, "")
+    }
 }
