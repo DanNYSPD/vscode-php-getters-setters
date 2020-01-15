@@ -134,6 +134,10 @@
             {
                 "command": "phpGettersSetters.jsonToPhp",
                 "title": "Json to php "
+            },
+            {
+                "command": "phpGettersSetters.toSnakeCase",
+                "title": "Transform to snakeCase "
             }
         ],
         "menus": {

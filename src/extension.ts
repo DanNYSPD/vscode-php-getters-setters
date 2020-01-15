@@ -26,6 +26,7 @@ import StringUtils from './StringUtils';
 import ResolveNamespace from './Extras/PHP/ResolveNamespace';
 import { FILE } from 'dns';
 import JsonToPhp from './Extras/PHP/JsonToPhp';
+import TextTransforms from './Extras/PHP/TextTransforms';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -866,6 +867,7 @@ class Resolver {
 function activate(context: vscode.ExtensionContext) {
     let resolver = new Resolver;
     let jsonToPhp= new JsonToPhp;
+    let textTransforms= new TextTransforms;
 
     let insertGetter = vscode.commands.registerCommand('phpGettersSetters.insertGetter', () => resolver.insertGetter());
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
@@ -883,6 +885,7 @@ function activate(context: vscode.ExtensionContext) {
 
     let listRoutesAndGo=vscode.commands.registerCommand('phpGettersSetters.listRoutesAndGo', (value)=>{resolver.listRoutesAndGo()});
     let jsonToPhpCo=vscode.commands.registerCommand('phpGettersSetters.jsonToPhp', (value)=>{jsonToPhp.jsonTo()});
+    let toSnakeCase=vscode.commands.registerCommand('phpGettersSetters.toSnakeCase', (value)=>{textTransforms.toSnakeCase()});
 
 
     context.subscriptions.push(insertGetter);
@@ -899,7 +902,9 @@ function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(generateTemplateFor);
     context.subscriptions.push(listRoutesAndGo);
     
-	context.subscriptions.push(jsonToPhpCo);
+    context.subscriptions.push(jsonToPhpCo);
+    
+	context.subscriptions.push(toSnakeCase);
 
 }
 
