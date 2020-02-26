@@ -27,6 +27,7 @@ import ResolveNamespace from './Extras/PHP/ResolveNamespace';
 import { FILE } from 'dns';
 import JsonToPhp from './Extras/PHP/JsonToPhp';
 import TextTransforms from './Extras/PHP/TextTransforms';
+import EndPoint from './Extras/EndPoint';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -805,6 +806,7 @@ class Resolver {
                 if(null==endpoint){
                     this.showErrorMessage("Cannot be found")
                 }
+                console.log(className)
                 const ignore = [
                     '**/build/**/*',
                     '**/out/**/*',
@@ -824,7 +826,7 @@ class Resolver {
                     //is relative becase I use  RelativePattern in the below code to search the class
                    
                 }
-
+                    console.log("Buscnado "+className)
                   vscode.workspace.findFiles(
                     new RelativePattern(vscode.workspace.rootPath, `{**/`+className+`.php}`),
                     new RelativePattern(vscode.workspace.rootPath, `{${ignoreWorkspace.join(',')}}`),
@@ -834,32 +836,45 @@ class Resolver {
                         //open directly 
                         console.log(urls[0]);
                         let file=urls[0];
-                        vscode.workspace.openTextDocument(file).then(document=>{
-                            //now I need to go to the line
-                            if(document.lineCount<endpoint.numberLine){
-                                console.error("NUmber line is minor")
-                            }
-                            console.info(endpoint)
-                            vscode.window.showTextDocument(document).then((editor:vscode.TextEditor)=>{
-                                // according to this line https://github.com/Microsoft/vscode/issues/6695 is posile to  select the fule
-                                let number=FunctionDefinition.getFunctionLineNumberFromDoc(editor,endpoint.controllerClassMethod);
-                                console.log(endpoint.controllerClassMethod)
-                                console.log(number)
-
-                                let range=document.lineAt(number).range;
-                                 
-                                editor.selection =  new vscode.Selection(range.start, range.end);
-                                editor.revealRange(range,vscode.TextEditorRevealType.AtTop);
-                            });
-                            
-                        })
+                       this.openSelectListAndGo(file,endpoint);
                     }else{
                         //make the programmer choose
+                        console.log("Tienes mas de un archivo")
+                        let paths=urls.map(x=>x.fsPath);
+                        vscode.window.showQuickPick(paths).then(selectedValue=>{
+                            console.log("Seleccionaste")
+                            let selectedUrl=urls.find(x=>x.fsPath==selectedValue);
+                            this.openSelectListAndGo(selectedUrl,endpoint);
+                        });
+                         
                     }
+                }).then(urlOrPath=>{
+                    
                 });
             })
             //now I must read
     }
+     openSelectListAndGo(urlOrPath,endpoint:EndPoint){
+        vscode.workspace.openTextDocument(urlOrPath).then(document=>{
+            //now I need to go to the line
+            if(document.lineCount<endpoint.numberLine){
+                console.error("NUmber line is minor")
+            }
+            console.info(endpoint)
+            vscode.window.showTextDocument(document).then((editor:vscode.TextEditor)=>{
+                // according to this line https://github.com/Microsoft/vscode/issues/6695 is posile to  select the fule
+                let number=FunctionDefinition.getFunctionLineNumberFromDoc(editor,endpoint.controllerClassMethod);
+                console.log(endpoint.controllerClassMethod)
+                console.log(number)
+    
+                let range=document.lineAt(number).range;
+                 
+                editor.selection =  new vscode.Selection(range.start, range.end);
+                editor.revealRange(range,vscode.TextEditorRevealType.AtTop);
+            });
+            
+        })
+     }
 }
 
  

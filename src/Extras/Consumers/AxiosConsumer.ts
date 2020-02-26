@@ -1,4 +1,6 @@
-import EndPoint from "../Endpoint";
+import EndPoint from "../EndPoint";
+
+//import EndPoint from "../Endpoint";
 
 export default class AxiosConsumer{
 

@@ -1,8 +1,9 @@
 import StringUtils from "../../StringUtils";
 import * as vscode from 'vscode';
-import EndPoint from "../Endpoint";
+//import EndPoint from "../Endpoint";
 import DocumentModel from "../DocumentModel";
 import { isRegExp } from "util";
+import EndPoint from "../EndPoint";
 
 export default class Router{
 
@@ -66,12 +67,14 @@ export default class Router{
                  //is posible to to define a function on it but is not good and is not my way, so I won't consider it
                  let controllerPart='';
                 if(line.includes('::class')){
+                    console.log("incluye ::")
                     controllerPart= StringUtils.getTextBetween(',','::',line);
                 }else{
                     const separadorSlim=":";
                     const separadorLaravel="@";
                     //because is posible that other framerwroks use :: to call a static method, only if the route definition doesn't have the laravel separator , go to this flow
                      if(line.includes(separadorSlim)&&!line.includes(separadorLaravel)){
+                        // console.log("separator slim")
                         controllerPart= StringUtils.getTextBetween(',',separadorSlim,line);
                             if(controllerPart.includes('.')){ //if has this value it means is concatenation
                                 

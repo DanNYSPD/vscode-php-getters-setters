@@ -1,4 +1,5 @@
-import EndPoint from "../Endpoint";
+import EndPoint from "../EndPoint";
+
 
 export default class CurlPhpConsumer{
     
