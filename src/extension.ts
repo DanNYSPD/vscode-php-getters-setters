@@ -189,16 +189,46 @@ class Resolver {
                 this.showErrorMessage(error.message);
                 return null;
             }
-            content += this.constantTemplate(constant);
+            //content += this.constantTemplate(constant);
         }
         this.renderTemplate(content);
     }
-    constantTemplate(prop:Constant) {
+    insertIsConstantv2() {
+        const editor = this.activeEditor();
+        let constants:Constant[] = null;
+        let content = '';
+        let property:Property = null;
+        for (let index = 0; index < editor.selections.length; index++) {
+            const selection = editor.selections[index];
+            try {
+                property = Property.fromEditorPosition(editor, selection.active);
+            }
+            catch (error) {
+                this.showErrorMessage(error.message);
+                return null;
+            }
+            //obtengo la propiedad actual
+            constants = Constant.getConstants(editor.document)
+            vscode.window.showQuickPick(constants.map(x=>x.getName())).then(selected=>{
+                //now that I have the property and the constant selected, I will render the template
+                console.log(selected)
+                let constantObj= constants.find(x=>x.getName()==selected);
+                
+                content += this.constantTemplate(constantObj,property);
+                this.renderTemplate(content);
+            })
+            
+            
+        }
+       
+    }
+    constantTemplate(prop:Constant,property:Property) {
         const name = prop.getName();
         const camelCaseName=Names.toCamelCase(name);
-        const description = prop.getDescription();
+        //const description = prop.getDescription();
+        const description = "Check if the property is(has the value of the constant:"+prop.getName()+")";
         const tab = prop.getIndentation();
-        const type = prop.getType();
+        const type = "boolean";
         const spacesAfterReturn = Array(this.config.getInt('spacesAfterReturn', 2) + 1).join(' ');
         const templateFile = this.config.get('getterTemplate', 'getter.js');
         if (this.templatesManager.exists(templateFile)) {
@@ -211,10 +241,10 @@ class Resolver {
             + (type ? tab + ` *\n` : ``)
             + (type ? tab + ` * @return` + spacesAfterReturn + type + `\n` : ``)
             + tab + ` */ \n`
-            + tab + `public function is` + camelCaseName + `():bool\n`
+            + tab + `public function is${property.getPascalCaseName()}${camelCaseName}():bool\n`
             + tab + `{\n`
             //+ tab + tab + `return !empty($this->` + name + `);\n`
-            + tab + tab + `return self::`+prop.getName()  + `==;\n`
+            + tab + tab + `return self::${prop.getName()}==\$this->${property.getName()};\n`
             + tab + `}\n`);
     }
     hasserTemplate(prop:Property) {
@@ -900,7 +930,7 @@ function activate(context: vscode.ExtensionContext) {
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
     let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
     let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
-    let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstant());
+    let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstantv2());
     let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
     let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
     //nota, si el tipo no corresonde, vscode no arroja un error, en ocasiones es mejor no indiar el tipo

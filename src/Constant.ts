@@ -1,5 +1,6 @@
 // tslint:disable-next-line:quotemark
 import * as vscode from 'vscode';
+import StringUtils from './StringUtils';
 
 
 export default class Constant { 
@@ -42,8 +43,12 @@ export default class Constant {
          return str.toLowerCase()!=str;   
     }
 
-    
-    static fromEditorPosition(editor: vscode.TextEditor, activePosition: vscode.Position) {
+    /**
+     * returns the constant declared in the active position
+     * @param editor 
+     * @param activePosition 
+     */
+    static fromEditorPosition(editor: vscode.TextEditor, activePosition: vscode.Position) :Constant{
         const wordRange = editor.document.getWordRangeAtPosition(activePosition);
         
         if (wordRange === undefined) {
@@ -122,7 +127,7 @@ export default class Constant {
         return constant;
         
     }
-
+    
     getName(){
         return this.name;
     }
@@ -135,5 +140,52 @@ export default class Constant {
     }
     getType(){
         return this.type;
+    }
+    /**
+     * Returns all the constants that are declared in single lines:
+     * @param text 
+     */
+    static getConstants(text :vscode.TextDocument):Constant[]{
+        var i=0;
+        //let lstConstants:string[]=[];
+        let lstConstants:Constant[]=[];
+        while(i<text.lineCount){
+            var line=text.lineAt(i);
+
+            if(
+                !line.text.includes('$')&&
+                line.text.includes('const')//keyword const
+
+             && line.text.includes(';')
+            &&!line.isEmptyOrWhitespace){//with this I descart the line, improving performance too
+                if(
+                    
+                 !line.text.includes('function') //discard function declartion
+                && !line.text.includes('__construct') //discard constructor
+                ){//note: this doesnt consider the php 7.4 that was realeased in november  and which will allow hint type
+                    
+                    if(line.text.includes('=')){ //it means that there is a asignation and because it's a constant it must have a declaration
+                        let cleanedLine=line.text.trim();
+                        if(StringUtils.startsWithOr(cleanedLine,['public','protected','private'])){
+                            //this means this constant has a scope, so the line has the next expression "scope const CONSTANT_NAME="";"
+                            
+                        }else{
+                            //the line has the form const CONSTANT_NAME=
+                        }
+                        let name=StringUtils.getTextBetween("const","=",cleanedLine);
+                       
+                        let constantObj= new Constant(name.trim());
+                        constantObj.indentation="    ";//four spaces
+                        constantObj.type="";//(si despues del igual existen comillas simples o dobles antes del ; entonces es un string, en otro caso es un numerico(si incluye punto es un float, en caso contrario un int), false y true son booleanos, )
+                    
+                       lstConstants.push(constantObj);
+
+
+                    }
+                }
+            }
+            i++
+        }
+        return lstConstants;
     }
 }

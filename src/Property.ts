@@ -122,6 +122,9 @@ export default class Property {
     getName() : string {
         return this.name;
     }
+    getPascalCaseName():string{
+        return Names.toCamelCase(this.name);
+    }
 
     getterDescription() : string {
         return this.generateMethodDescription('Get ');

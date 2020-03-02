@@ -11,12 +11,25 @@ export class Names {
      * @param name string
      */
     static toCamelCase(name:string){
-        var parts=name.split('_')
-        var camelCaseName='';
-        parts.forEach(p=>{
-                camelCaseName+= p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();
+        var camelCaseName='';   
+        if(name.includes("_")){
+            //in this case it can have the snake case : Uppercase_Uppercase or lower_lower        
+            var parts=name.split('_')
+                 
+            parts.forEach(p=>{
+                    camelCaseName+= p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();
+                }
+            );
+        }else{
+            //if all the chars in the string are upper chars , just the firtsOne is Uppercase
+            let arrChars=name.split("");
+            if(arrChars.every(x=>x==x.toUpperCase())){
+                camelCaseName=name.charAt(0).toUpperCase()+name.slice(1).toLowerCase();
+            }else{
+                //this means that there are uppercase and lowercase in the name so it could be camelCase
+                camelCaseName=name.charAt(0).toUpperCase()+name.slice(1);
             }
-        );
+        }
         return camelCaseName;
     }
 
