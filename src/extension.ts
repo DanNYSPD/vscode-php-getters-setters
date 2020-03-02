@@ -470,9 +470,11 @@ class Resolver {
         let listPropertiesInConstructorThatAreClassProperties=Property.getPropertiesInsideFunctionThatAreClassProperties(constructorBodybegining,constructorBodyEnd,editor.document);
 
         let templateAsingation='';
+        let counterFoundProperties=0;
         lstparametersObj.forEach(element=>{
 
-            if(listPropertiesInConstructorThatAreClassProperties.find(x=>x==element.getName())){
+            if(listPropertiesInConstructorThatAreClassProperties.find(x=>x==element.getName())){    
+                counterFoundProperties++;
                 return;
             }
 
@@ -482,6 +484,7 @@ class Resolver {
            tab+`\n`;
           
        });
+       
        if(!template){
            template='';
        }
@@ -491,9 +494,18 @@ class Resolver {
             this.renderTemplate(templateAsingation,constructorBodybegining+1);
        })*/
        //i change the order because if I add first the class propertie then the constructor number line will change and the reference that i have will be obsolete
-       this.renderTemplate(templateAsingation,constructorBodybegining+1).then(success=>{
+       if(counterFoundProperties==lstparametersObj.length){
+        //this means all the constructor parameters have asigments inside the constructor so there is no need to create a template
+        this.showInformationMessage("All the constructor parameters are assigned")
+      
+    }else{
+        this.renderTemplate(templateAsingation,constructorBodybegining+1).then(success=>{
+            this.renderTemplate(template,lineNumberBeginning.lineNumber+1);
+            }) 
+    }
+       //this.renderTemplate(templateAsingation,constructorBodybegining+1).then(success=>{
         this.renderTemplate(template,lineNumberBeginning.lineNumber+1);
-   })
+       // })
     }
 
     renderTemplate(template: string,lineNumber?:number) {
