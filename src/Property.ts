@@ -183,7 +183,7 @@ export default class Property {
                 if(
                 (
                 line.text.includes('public')        //consider only propierties under with scope
-                ||line.text.includes('public')      //consider only propierties under with scope
+                ||line.text.includes('private')      //consider only propierties under with scope
                 ||line.text.includes('protected')   //consider only propierties under with scope
                 )
                 &&
@@ -200,8 +200,8 @@ export default class Property {
 
 
                     }else{
-                        var name=line.text.split(' ')[1];// I get the name
-                        name=name.substring(1,name.length-2); //remove the $ and ;
+                        var name=line.text.trim().split(' ')[1];// I get the name
+                        name=name.substring(1,name.length-1); //remove the $ and ;
                         lstPropertiesNames.push(name);
                     }
                 }
