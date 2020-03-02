@@ -227,7 +227,7 @@ export default class Property {
                 ){  
                   let firtsPartOfAssignment=  line.text.substring(0,line.text.indexOf('='));
                   let propertieName=firtsPartOfAssignment.substring(firtsPartOfAssignment.indexOf('>')+1);  
-                  listpropierties.push(propertieName);
+                  listpropierties.push(propertieName.trim());//I trimmed the text because it's posible to use spaces between the property name , the equal = and the value.
             }
             begining++;
 
