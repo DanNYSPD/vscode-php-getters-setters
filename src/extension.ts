@@ -237,11 +237,12 @@ class Resolver {
         }
         return (`\n`
             + tab + `/**\n`
-            + tab + ` * ` + prop.getDescription() + `\n`
+            + tab + ` * ` + prop.getIsConstantDescription(property) + `\n`
             + (type ? tab + ` *\n` : ``)
             + (type ? tab + ` * @return` + spacesAfterReturn + type + `\n` : ``)
             + tab + ` */ \n`
-            + tab + `public function is${property.getPascalCaseName()}${camelCaseName}():bool\n`
+           // + tab + `public function is${property.getPascalCaseName()}${camelCaseName}():bool\n`
+            + tab + `public function ${prop.getIsConstantFunctionName(property)}():bool\n`
             + tab + `{\n`
             //+ tab + tab + `return !empty($this->` + name + `);\n`
             + tab + tab + `return self::${prop.getName()}==\$this->${property.getName()};\n`

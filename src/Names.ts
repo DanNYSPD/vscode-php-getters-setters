@@ -1,3 +1,6 @@
+/**
+ * https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
+ */
 export class Names {
 
      /**

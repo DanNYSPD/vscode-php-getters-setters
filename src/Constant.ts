@@ -1,8 +1,9 @@
 // tslint:disable-next-line:quotemark
 import * as vscode from 'vscode';
 import StringUtils from './StringUtils';
+import Property from './Property';
 
-
+import { Names } from './Names';
 export default class Constant { 
     private description: string = null;
     private name: string;
@@ -187,5 +188,49 @@ export default class Constant {
             i++
         }
         return lstConstants;
+    }
+    getPascalCaseName():string{
+        return Names.toCamelCase(this.name);
+    }
+    /**
+     * This method returns the appropiated predicate function isPropertyConstant name
+     * @param property 
+     */
+    getIsConstantFunctionName(property:Property):string{
+        //first to ensure the the name of the const is not repeated, I will check if the property ends with the constant name, in this case I will avoid the constant name repetition
+
+        //example isParameterSearchModeSearchModeLike. where SearchMode is duplicated because the property name is ParameterSearchMode and the comparable constnat name is SEARCH_MODE_LIKE
+        
+        let propertyName=property.getPascalCaseName();
+        let constName=this.getPascalCaseName();
+        let isConstantName="is"
+
+        
+        if(propertyName.endsWith(constName)){
+            isConstantName+= propertyName.substr(0, propertyName.indexOf(constName))+constName;
+        }else{
+            //because I used to put CONSTANT_NAME_SUBNAME, I need to remote the "subname" part(this is because ). the format is PascalCase so O need to remove the last part (since the last Uppercase Char):
+            let lastUppercaseIndex=-1
+            constName.split("").reverse().some((x,index)=>{
+                lastUppercaseIndex=index;
+                return x.toUpperCase()==x
+            })
+            
+            lastUppercaseIndex= constName.length-lastUppercaseIndex;
+           let cleanedConstName=constName.substr(0,lastUppercaseIndex-1)
+            if(propertyName.endsWith(cleanedConstName)){
+                //I remove the cleanedConstName from the constName to leave only the suffix
+                let constantSuffix=constName.substr(lastUppercaseIndex-1,constName.length-lastUppercaseIndex+1);
+                isConstantName+=propertyName+ constantSuffix.charAt(0).toUpperCase()+constantSuffix.slice(1);  
+            }else{
+                //constName=constName.substr(lastUppercaseIndex,constName.length-lastUppercaseIndex);
+            isConstantName+=propertyName+constName;
+            }
+        }
+        return isConstantName;
+    }
+
+    getIsConstantDescription(property:Property):string{
+       return `Checks whether the property value of ${property.getName()} is equal to the class constant value '${this.getName()}'` 
     }
 }
