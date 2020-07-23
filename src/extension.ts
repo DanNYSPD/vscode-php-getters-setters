@@ -176,6 +176,23 @@ class Resolver {
         }
         this.renderTemplate(content);
     }
+    insertCount() {
+        const editor = this.activeEditor();
+        let property = null;
+        let content = '';
+        for (let index = 0; index < editor.selections.length; index++) {
+            const selection = editor.selections[index];
+            try {
+                property = Property.fromEditorPosition(editor, selection.active);
+            }
+            catch (error) {
+                this.showErrorMessage(error.message);
+                return null;
+            }
+            content += this.CounterTemplate(property);
+        }
+        this.renderTemplate(content);
+    }
     insertIsConstant() {
         const editor = this.activeEditor();
         let constant = null;
@@ -270,7 +287,28 @@ class Resolver {
             + tab + tab + `return !empty($this->` + name + `);\n`
             + tab + `}\n`);
     }
-
+    CounterTemplate(prop:Property) {
+        const name = prop.getName();
+        const description = prop.getDescription();
+        const tab = prop.getIndentation();
+        const type = prop.getType();
+        const spacesAfterReturn = Array(this.config.getInt('spacesAfterReturn', 2) + 1).join(' ');
+        const templateFile = this.config.get('getterTemplate', 'getter.js');
+        if (this.templatesManager.exists(templateFile)) {
+            const template = require(this.templatesManager.path(templateFile));
+            return template(prop);
+        }
+        return (`\n`
+            + tab + `/**\n`
+            + tab + ` * ` + prop.counterDescription() + `\n`
+            + (type ? tab + ` *\n` : ``)
+            + (type ? tab + ` * @return` + spacesAfterReturn + `int` + `\n` : ``)
+            + tab + ` */ \n`
+            + tab + `public function ` + prop.counterName() + `():int\n`
+            + tab + `{\n`
+            + tab + tab + `return count($this->` + name + `);\n`
+            + tab + `}\n`);
+    }
     getterTemplate(prop: Property) {
         const name = prop.getName();
         const description = prop.getDescription();
@@ -457,6 +495,7 @@ class Resolver {
             }
 
             i++;
+            //considerar arrojar error de __construct not found
         }
         //I get the propierties
         let lstProperties=  Property.getProperties(editor.document);
@@ -931,6 +970,9 @@ function activate(context: vscode.ExtensionContext) {
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
     let insertGetterAndSetter = vscode.commands.registerCommand('phpGettersSetters.insertGetterAndSetter', () => resolver.insertGetterAndSetter());
     let insertHasser = vscode.commands.registerCommand('phpGettersSetters.insertHasser', () => resolver.insertHasser());
+
+    let insertCounter = vscode.commands.registerCommand('phpGettersSetters.insertCounter', () => resolver.insertCount());
+
     let insertIsConstant = vscode.commands.registerCommand('phpGettersSetters.insertIsConstant', () => resolver.insertIsConstantv2());
     let insertClass = vscode.commands.registerCommand('phpGettersSetters.insertClass', () => resolver.insertClass());
     let insertConstructorProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorProperties', () => resolver.insertConstructorProperties());
@@ -951,6 +993,7 @@ function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(insertGetterAndSetter);
 	context.subscriptions.push(insertHasser);
     context.subscriptions.push(insertClass);
+    context.subscriptions.push(insertCounter);
     
 
 	context.subscriptions.push(addModule);

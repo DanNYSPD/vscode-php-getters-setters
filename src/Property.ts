@@ -168,6 +168,12 @@ export default class Property {
 	hasserDescription() {
         return this.generateMethodDescription('Verifies wether the propertie  '+this.getName()+` has a value`);
     }
+    counterName() {
+        return this.generateMethodName('count');
+    }
+    counterDescription() {
+        return this.generateMethodDescription('Returns the number of items of  '+this.getName()+` `);
+    }
     /**
      * Gets the class propierties
      * @param text 

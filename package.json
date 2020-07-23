@@ -33,6 +33,7 @@
         "onCommand:phpGettersSetters.insertSetter",
         "onCommand:phpGettersSetters.insertGetterAndSetter",
         "onCommand:phpGettersSetters.insertHasser",
+        "onCommand:phpGettersSetters.insertCounter",
         "onCommand:phpGettersSetters.insertIsConstant"
     ],
     "main": "./out/extension",
@@ -97,6 +98,9 @@
             {
                 "command": "phpGettersSetters.insertHasser",
                 "title": "Insert PHP haser"
+            }, {
+                "command": "phpGettersSetters.insertCounter",
+                "title": "Insert PHP counter"
             },
             {
                 "command": "phpGettersSetters.insertIsConstant",
@@ -158,6 +162,10 @@
                     "command": "phpGettersSetters.insertHasser",
                     "when": "editorLangId == php"
                 },
+                 {
+                    "command": "phpGettersSetters.insertCounter",
+                    "when": "editorLangId == php"
+                },
                 {
                     "command": "phpGettersSetters.insertIsConstant",
                     "when": "editorLangId == php"
@@ -199,6 +207,11 @@
                     "when": "resourceLangId == php",
                     "command": "phpGettersSetters.insertHasser",
                     "alt": "phpGettersSetters.insertHasser",
+                    "group": "0_phpGettersSetters@4"
+                }, {
+                    "when": "resourceLangId == php",
+                    "command": "phpGettersSetters.insertCounter",
+                    "alt": "phpGettersSetters.insertCounter",
                     "group": "0_phpGettersSetters@4"
                 },
                 {
