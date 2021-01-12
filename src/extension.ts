@@ -28,6 +28,7 @@ import { FILE } from 'dns';
 import JsonToPhp from './Extras/PHP/JsonToPhp';
 import TextTransforms from './Extras/PHP/TextTransforms';
 import EndPoint from './Extras/EndPoint';
+import ListOfNamesIntoProperties from './ListOfNamesIntoProperties';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -965,6 +966,7 @@ function activate(context: vscode.ExtensionContext) {
     let resolver = new Resolver;
     let jsonToPhp= new JsonToPhp;
     let textTransforms= new TextTransforms;
+    let listOfNamesIntoProperties = new ListOfNamesIntoProperties;
 
     let insertGetter = vscode.commands.registerCommand('phpGettersSetters.insertGetter', () => resolver.insertGetter());
     let insertSetter = vscode.commands.registerCommand('phpGettersSetters.insertSetter', () => resolver.insertSetter());
@@ -986,6 +988,9 @@ function activate(context: vscode.ExtensionContext) {
     let listRoutesAndGo=vscode.commands.registerCommand('phpGettersSetters.listRoutesAndGo', (value)=>{resolver.listRoutesAndGo()});
     let jsonToPhpCo=vscode.commands.registerCommand('phpGettersSetters.jsonToPhp', (value)=>{jsonToPhp.jsonTo()});
     let toSnakeCase=vscode.commands.registerCommand('phpGettersSetters.toSnakeCase', (value)=>{textTransforms.toSnakeCase()});
+    //this receives a list of names like "a,b,foo" and turn them into "public $a; public b; public $foo;" separated by new lines
+    let listOfNamesIntoPropertiesAction=vscode.commands.registerCommand('phpGettersSetters.listOfNamesIntoProperties', (value)=>{listOfNamesIntoProperties.toClassProperties()});
+    let ddlToClassPropertiesAction=vscode.commands.registerCommand('phpGettersSetters.ddlIntoProperties', (value)=>{listOfNamesIntoProperties.ddlToClassProperties()});
 
 
     context.subscriptions.push(insertGetter);
@@ -1006,6 +1011,8 @@ function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(jsonToPhpCo);
     
 	context.subscriptions.push(toSnakeCase);
+	context.subscriptions.push(listOfNamesIntoPropertiesAction);
+	context.subscriptions.push(ddlToClassPropertiesAction);
 
 }
 
