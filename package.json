@@ -150,6 +150,9 @@
             {
                 "command": "phpGettersSetters.ddlIntoProperties",
                 "title": "DDL Definition into properties  "
+            },{
+                "command": "phpGettersSetters.ddlIntoForm",
+                "title": "DDL Definition or list into form  "
             }
         ],
         "menus": {

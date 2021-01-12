@@ -991,6 +991,7 @@ function activate(context: vscode.ExtensionContext) {
     //this receives a list of names like "a,b,foo" and turn them into "public $a; public b; public $foo;" separated by new lines
     let listOfNamesIntoPropertiesAction=vscode.commands.registerCommand('phpGettersSetters.listOfNamesIntoProperties', (value)=>{listOfNamesIntoProperties.toClassProperties()});
     let ddlToClassPropertiesAction=vscode.commands.registerCommand('phpGettersSetters.ddlIntoProperties', (value)=>{listOfNamesIntoProperties.ddlToClassProperties()});
+    let ddlToFormAction=vscode.commands.registerCommand('phpGettersSetters.ddlIntoForm', (value)=>{listOfNamesIntoProperties.ddlToForms()});
 
 
     context.subscriptions.push(insertGetter);
@@ -1013,6 +1014,7 @@ function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(toSnakeCase);
 	context.subscriptions.push(listOfNamesIntoPropertiesAction);
 	context.subscriptions.push(ddlToClassPropertiesAction);
+	context.subscriptions.push(ddlToFormAction);
 
 }
 
