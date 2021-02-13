@@ -153,6 +153,10 @@
             },{
                 "command": "phpGettersSetters.ddlIntoForm",
                 "title": "DDL Definition or list into form  "
+            },
+            {
+                "command": "phpGettersSetters.insertConstructorFromProperties",
+                "title": "Insert/create a constructor from the properties of the file"
             }
         ],
         "menus": {

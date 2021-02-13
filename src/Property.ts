@@ -56,45 +56,7 @@ export default class Property {
             return property;
         }
 
-        for (let line = previousLineNumber - 1; line > 0; line--) {
-            // Everything found
-            if (property.name && property.type && property.description) {
-                break;
-            }
-
-            const text = editor.document.lineAt(line).text;
-
-            // Reached the end of the doc block
-            if (text.includes('/**') || !text.includes('*')) {
-                break;
-            }
-
-            // Remove spaces & tabs
-            const lineParts = text.split(' ').filter(function(value){
-                return value !== '' && value !== "\t" && value !== "*";
-            });
-
-            const varPosition = lineParts.indexOf('@var');
-
-            // Found @var line
-            if (-1 !== varPosition) {
-                property.setType(lineParts[varPosition + 1]);
-
-                var descriptionParts = lineParts.slice(varPosition + 2);
-
-                if (descriptionParts.length) {
-                    property.description = descriptionParts.join(` `);
-                }
-
-                continue;
-            }
-
-            const posibleDescription = lineParts.join(` `);
-
-            if (posibleDescription[0] !== '@') {
-                property.description = posibleDescription;
-            }
-        }
+         this.getPropertyInfo(property,previousLineNumber,editor)
 
         return property;
     }
@@ -142,6 +104,9 @@ export default class Property {
     getType() : string {
         return this.type;
     }
+    hasType() : boolean {
+        return this.type&&this.type.length>0;
+    }
 
     getTypeHint() : string {
         return this.typeHint;
@@ -179,11 +144,57 @@ export default class Property {
     counterDescription() {
         return this.generateMethodDescription('Returns the number of items of  '+this.getName()+` `);
     }
+
+    static getScope(text:string){
+        //text.trim().startsWith()
+    }
+    static getPropertyInfo(property:Property,previousLineNumber:number,editor:vscode.TextEditor)
+    {
+        for (let line = previousLineNumber - 1; line > 0; line--) {
+            // Everything found
+            if (property.name && property.type && property.description) {
+                break;
+            }
+
+            const text = editor.document.lineAt(line).text;
+
+            // Reached the end of the doc block
+            if (text.includes('/**') || !text.includes('*')) {
+                break;
+            }
+
+            // Remove spaces & tabs
+            const lineParts = text.split(' ').filter(function(value){
+                return value !== '' && value !== "\t" && value !== "*";
+            });
+
+            const varPosition = lineParts.indexOf('@var');
+
+            // Found @var line
+            if (-1 !== varPosition) {
+                property.setType(lineParts[varPosition + 1]);
+
+                var descriptionParts = lineParts.slice(varPosition + 2);
+
+                if (descriptionParts.length) {
+                    property.description = descriptionParts.join(` `);
+                }
+
+                continue;
+            }
+
+            const posibleDescription = lineParts.join(` `);
+
+            if (posibleDescription[0] !== '@') {
+                property.description = posibleDescription;
+            }
+        }
+    }
     /**
      * Gets the class propierties
      * @param text 
      */
-    static getProperties(text :vscode.TextDocument){
+    static getProperties(text :vscode.TextDocument):string[]{
         var i=0;
         let lstPropertiesNames:string[]=[];
         while(i<text.lineCount){
@@ -210,9 +221,7 @@ export default class Property {
                        name=name.trim();
                        name=name.substr(0,name.indexOf('='));                     
                        name=name.substring(1);
-                       lstPropertiesNames.push(name);
-
-
+                       lstPropertiesNames.push(name);                     
                     }else{
                         var name=line.text.trim().split(' ')[1];// I get the name
                         name=name.substring(1,name.length-1); //remove the $ and ;
@@ -222,6 +231,88 @@ export default class Property {
             }
             i++
         }
+        return lstPropertiesNames;
+    }
+    static getPropertiesObjects(text :vscode.TextDocument):Property[]{
+        var i=0;
+        let lstPropertiesNames:Property[]=[];
+        while(i<text.lineCount){
+            var line=text.lineAt(i);
+
+            if(line.text.trim().startsWith('//') //discard commented property
+            || line.text.trim().startsWith('#')) //discard commented property)
+            {
+                i++
+                continue;
+            }
+
+            if(
+                line.text.includes('$')
+
+             && line.text.includes(';')
+            &&!line.isEmptyOrWhitespace){//with this I descart the line, improving performance too
+                if(
+                (
+                line.text.includes('public')        //consider only propierties under with scope
+                ||line.text.includes('private')      //consider only propierties under with scope
+                ||line.text.includes('protected')   //consider only propierties under with scope
+                )
+                &&
+                 !line.text.includes('function') //discard function declartion
+                && !line.text.includes('__construct') //discard constructor
+               
+                ){//note: this doesnt consider the php 7.4 that will be realease in november and which will allow hint type
+                    
+                    if(line.text.includes('=')){ //it means that there is a asignation
+                       var name=line.text.split(' ')[1];// I get the name
+                       name=name.trim();
+                       name=name.substr(0,name.indexOf('='));                     
+                       name=name.substring(1);
+                       let p= new Property(name);
+                       lstPropertiesNames.push(p);     
+                       p.indentation=line.text.substring(0,line.firstNonWhitespaceCharacterIndex)                
+
+                       const previousLineNumber = i - 1;
+                       const previousLine = vscode.window.activeTextEditor.document.lineAt(previousLineNumber);
+                        if(previousLineNumber<0){
+                            i++
+                            continue;
+                        }
+                      // No doc block found
+                       if (!previousLine.text.endsWith('*/')) {
+                            i++
+                           continue;
+                       }
+                       this.getPropertyInfo(p,previousLineNumber,vscode.window.activeTextEditor);
+
+
+
+                    }else{
+                        var name=line.text.trim().split(' ')[1];// I get the name
+                        name=name.substring(1,name.length-1); //remove the $ and ;
+                        let p= new Property(name);
+
+                        lstPropertiesNames.push(p);
+                        p.indentation=line.text.substring(0,line.firstNonWhitespaceCharacterIndex)                
+
+                        const previousLineNumber = i - 1;
+                       const previousLine = vscode.window.activeTextEditor.document.lineAt(previousLineNumber);
+                        if(previousLineNumber<0){
+                            i++
+                            continue;
+                        }
+                      // No doc block found
+                       if (!previousLine.text.endsWith('*/')) {
+                            i++
+                           continue;
+                       }
+                       this.getPropertyInfo(p,previousLineNumber,vscode.window.activeTextEditor);
+                    }
+                }
+            }
+            i++
+        }
+        lstPropertiesNames=lstPropertiesNames.filter(p=>p.getName().length>0);
         return lstPropertiesNames;
     }
 

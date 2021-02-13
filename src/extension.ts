@@ -29,6 +29,7 @@ import JsonToPhp from './Extras/PHP/JsonToPhp';
 import TextTransforms from './Extras/PHP/TextTransforms';
 import EndPoint from './Extras/EndPoint';
 import ListOfNamesIntoProperties from './ListOfNamesIntoProperties';
+import CreateConstructorFromProperties from './Extras/PHP/CreateConstructorFromProperties';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
@@ -427,6 +428,23 @@ class Resolver {
             + `}\n`
         );
         
+    }
+    insertConstructorFromProperties(){
+      let templateConst=  CreateConstructorFromProperties.createConstructorFromPropeties(this.activeEditor());
+
+      let lineNUmber=FunctionDefinition.getFunctionLineNumberFromDoc(this.activeEditor(),'');
+        if(lineNUmber<0){
+            //if there is no function insert then before } closing bracket
+
+
+            lineNUmber=null;
+            //this.showErrorMessage('Error determining where to insert the constructor.');
+           // return;   
+        }
+
+      this.renderTemplate(templateConst,lineNUmber).then(result=>{
+
+      })
     }
     insertConstructorProperties(){
         const editor = this.activeEditor();
@@ -993,6 +1011,8 @@ function activate(context: vscode.ExtensionContext) {
     let ddlToClassPropertiesAction=vscode.commands.registerCommand('phpGettersSetters.ddlIntoProperties', (value)=>{listOfNamesIntoProperties.ddlToClassProperties()});
     let ddlToFormAction=vscode.commands.registerCommand('phpGettersSetters.ddlIntoForm', (value)=>{listOfNamesIntoProperties.ddlToForms()});
 
+    let insertConstructorFromProperties = vscode.commands.registerCommand('phpGettersSetters.insertConstructorFromProperties', () => resolver.insertConstructorFromProperties());
+
 
     context.subscriptions.push(insertGetter);
     context.subscriptions.push(insertSetter);
@@ -1015,6 +1035,7 @@ function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(listOfNamesIntoPropertiesAction);
 	context.subscriptions.push(ddlToClassPropertiesAction);
 	context.subscriptions.push(ddlToFormAction);
+	context.subscriptions.push(insertConstructorFromProperties);
 
 }
 

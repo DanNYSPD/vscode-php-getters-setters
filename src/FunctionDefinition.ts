@@ -65,7 +65,11 @@ export default class FunctionDefinition{
         tab+`}`+`\n`
         ;    
     }
-
+    /**
+     * Gets the number of the function with the given name
+     * @param document 
+     * @param functionName Function name, if empty, this returns the first function line number
+     */
     static getFunctionLineNumberFromDoc(document: vscode.TextEditor,functionName:string){
         document.document.lineCount
         let found=false,i=0;
@@ -75,9 +79,12 @@ export default class FunctionDefinition{
                && document.document.lineAt(i).text.includes(functionName)
                 ){
                     return i;
+            }else if(document.document.lineAt(i).text.includes("function")&&(functionName==""|| functionName.length==0)){
+                return i
             }
             i++;
         }
         return -1;
     }
+    
 }
