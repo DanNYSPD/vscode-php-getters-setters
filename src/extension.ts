@@ -30,10 +30,11 @@ import TextTransforms from './Extras/PHP/TextTransforms';
 import EndPoint from './Extras/EndPoint';
 import ListOfNamesIntoProperties from './ListOfNamesIntoProperties';
 import CreateConstructorFromProperties from './Extras/PHP/CreateConstructorFromProperties';
+import Renderer from './Renderer';
 
 //import { LanguageClient, LanguageClientOptions, StreamInfo } from 'vscode-languageclient'
 
-class Resolver {
+export class Resolver {
     config: Configuration;
     templatesManager: TemplatesManager;
 
@@ -430,21 +431,9 @@ class Resolver {
         
     }
     insertConstructorFromProperties(){
-      let templateConst=  CreateConstructorFromProperties.createConstructorFromPropeties(this.activeEditor());
+        CreateConstructorFromProperties.createConstructorFromPropeties(this.activeEditor(),this);
 
-      let lineNUmber=FunctionDefinition.getFunctionLineNumberFromDoc(this.activeEditor(),'');
-        if(lineNUmber<0){
-            //if there is no function insert then before } closing bracket
-
-
-            lineNUmber=null;
-            //this.showErrorMessage('Error determining where to insert the constructor.');
-           // return;   
-        }
-
-      this.renderTemplate(templateConst,lineNUmber).then(result=>{
-
-      })
+      
     }
     insertConstructorProperties(){
         const editor = this.activeEditor();
@@ -598,40 +587,7 @@ class Resolver {
     }
 
     renderTemplate(template: string,lineNumber?:number) {
-        if (!template) {
-            this.showErrorMessage('Missing template to render.');
-            return;
-        }
-        if(!lineNumber){
-            let insertLine = this.insertLine();
-            
-            if (!insertLine) {
-                this.showErrorMessage('Unable to detect insert line for template.');
-                return;
-            }
-            lineNumber=insertLine.lineNumber;
-        }
-        const editor = this.activeEditor();
-        let resolver = this;
-
-     return   editor.edit(function(edit: vscode.TextEditorEdit){
-            edit.replace(
-                new vscode.Position(lineNumber, 0),
-                template
-            );
-        }).then(
-            success => {
-                if (resolver.isRedirectEnabled() && success) {
-                    const redirector = new Redirector(editor);
-                    //redirector.goToLine(this.closingClassLine().lineNumber - 1);
-                    redirector.goToLine(lineNumber);
-                }
-            },
-            error => {
-                this.showErrorMessage(`Error generating functions: ` + error);
-            }
-        );
-        
+       return Renderer.renderTemplate(template,lineNumber,this);
     }
 
     insertLine() {
@@ -832,7 +788,6 @@ class Resolver {
     }
     generateTemplateFor(){
         let active=this.activeEditor();
-
         vscode.window.showQuickPick(['vs','snippet']).then(value=>{
             console.log(value)
             let text;
