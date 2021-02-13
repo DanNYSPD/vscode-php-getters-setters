@@ -2,7 +2,7 @@
     "name": "vscode-php-getters-setters",
     "displayName": "PHP Getters & Setters",
     "description": "Create PHP getters and setters from class properties",
-    "version": "1.2.3",
+    "version": "1.3.3",
     "publisher": "phproberto",
     "author": "Roberto Segura <roberto@phproberto.com>",
     "license": "MIT",
@@ -15,7 +15,7 @@
     },
     "icon": "images/icon.png",
     "engines": {
-        "vscode": "^1.18.0"
+        "vscode": "^1.34.1"
     },
     "categories": [
         "Other"
@@ -98,7 +98,8 @@
             {
                 "command": "phpGettersSetters.insertHasser",
                 "title": "Insert PHP haser"
-            }, {
+            },
+            {
                 "command": "phpGettersSetters.insertCounter",
                 "title": "Insert PHP counter"
             },
@@ -125,8 +126,7 @@
             {
                 "command": "phpGettersSetters.generateClientForApi",
                 "title": "Adds generates the consumer"
-            }
-            ,
+            },
             {
                 "command": "phpGettersSetters.generateTemplateFor",
                 "title": "Adds generates the template"
@@ -150,7 +150,8 @@
             {
                 "command": "phpGettersSetters.ddlIntoProperties",
                 "title": "DDL Definition into properties  "
-            },{
+            },
+            {
                 "command": "phpGettersSetters.ddlIntoForm",
                 "title": "DDL Definition or list into form  "
             },
@@ -177,7 +178,7 @@
                     "command": "phpGettersSetters.insertHasser",
                     "when": "editorLangId == php"
                 },
-                 {
+                {
                     "command": "phpGettersSetters.insertCounter",
                     "when": "editorLangId == php"
                 },
@@ -188,8 +189,7 @@
                 {
                     "command": "phpGettersSetters.insertClass",
                     "when": "editorLangId == php"
-                }
-                ,
+                },
                 {
                     "command": "phpGettersSetters.insertConstructorProperties",
                     "when": "editorLangId == php"
@@ -223,7 +223,8 @@
                     "command": "phpGettersSetters.insertHasser",
                     "alt": "phpGettersSetters.insertHasser",
                     "group": "0_phpGettersSetters@4"
-                }, {
+                },
+                {
                     "when": "resourceLangId == php",
                     "command": "phpGettersSetters.insertCounter",
                     "alt": "phpGettersSetters.insertCounter",
@@ -240,8 +241,7 @@
                     "command": "phpGettersSetters.insertClass",
                     "alt": "phpGettersSetters.insertClass",
                     "group": "0_phpGettersSetters@4"
-                }
-                ,
+                },
                 {
                     "when": "resourceLangId == php",
                     "command": "phpGettersSetters.insertConstructorProperties",
@@ -249,7 +249,7 @@
                     "group": "0_phpGettersSetters@4"
                 }
             ],
-            "explorer/context":[
+            "explorer/context": [
                 {
                     "when": "explorerResourceIsFolder",
                     "command": "phpGettersSetters.addModule"
@@ -257,38 +257,39 @@
             ]
         }
     },
-    "keybindings":[
-        {  
+    "keybindings": [
+        {
             "command": "phpGettersSetters.insertConstructorProperties",
             "key": "ctrl+alt+t",
             "when": "editorTextFocus"
-        } 
-        ,
+        },
         {
-            "key": "ctrl+alt+p",  
+            "key": "ctrl+alt+p",
             "command": "phpGettersSetters.listRoutesAndGo"
         },
         {
-            "key": "ctrl+alt+j",  
+            "key": "ctrl+alt+j",
             "command": "phpGettersSetters.jsonToPhp"
         }
     ],
+    "typings": "vscode.d.ts",
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "build": "vsce package",
-        "testlocal":"npm run compile &&  node ./node_modules/mocha/bin/mocha -- out/**/test/*.test.js "
+        "testlocal": "npm run compile &&  node ./node_modules/mocha/bin/mocha -- out/**/test/*.test.js "
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
+        "typescript": "4.1.3",
+        "@types/vscode": "^1.34.0",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "@types/mocha": "^2.2.42",
+        "@types/lodash-es": "^4.17.4"
     },
     "dependencies": {
-        "vscode-languageclient": "5.1.1"
+        "vscode-languageclient": "5.1.1",
+        "lodash-es": "^4.17.20"
     }
 }
